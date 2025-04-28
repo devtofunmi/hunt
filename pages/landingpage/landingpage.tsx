@@ -2,6 +2,7 @@ import Modal from '@/components/landingpage/Modal';
 import Navbar from '@/components/landingpage/Navbar';
 import ProductList from '@/components/landingpage/ProductList';
 import Sidebar from '@/components/landingpage/Sidebar';
+import { mockProducts } from '@/data/mockProducts';
 import React, { useState } from 'react';
 
 type Product = {
@@ -14,69 +15,14 @@ type Product = {
   saved: boolean;
 };
 
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: "Completely AI Agent",
-    description: "Instantly find, analyze, and track your competitors with AI.",
-    tags: ["Marketing", "AI", "Business Intelligence"],
-    logo: "https://logo.clearbit.com/openai.com",
-    upvotes: 2,
-    saved: false,
-  },
-  {
-    id: 2,
-    name: "Hirenga",
-    description: "Tired of messy hiring? Let AI organize it for you.",
-    tags: ["Hiring", "Productivity", "AI"],
-    logo: "https://logo.clearbit.com/lever.co",
-    upvotes: 1,
-    saved: false,
-  },
-  {
-    id: 3,
-    name: "Notclass",
-    description: "Turn YouTube videos into Courses with AI.",
-    tags: ["Education", "YouTube", "Online Learning"],
-    logo: "https://logo.clearbit.com/udemy.com",
-    upvotes: 1,
-    saved: false,
-  },
-  {
-    id: 4,
-    name: "Smart Keys for Mac",
-    description: "AI shortcuts for fixing grammar, translating and coding.",
-    tags: ["Writing", "Languages", "DevTools"],
-    logo: "https://logo.clearbit.com/grammarly.com",
-    upvotes: 2,
-    saved: false,
-  },
-  {
-    id: 5,
-    name: "Launchly",
-    description: "Launch and monitor your side projects easily.",
-    tags: ["Startups", "Launch", "Analytics"],
-    logo: "https://logo.clearbit.com/producthunt.com",
-    upvotes: 0,
-    saved: false,
-  },
-  {
-    id: 6,
-    name: "TaskFlow AI",
-    description: "Automate your task lists intelligently with AI suggestions.",
-    tags: ["Productivity", "Task Management"],
-    logo: "https://logo.clearbit.com/asana.com",
-    upvotes: 3,
-    saved: false,
-  },
-];
+
 
 const LandingPage = () => {
   const [visibleCount, setVisibleCount] = useState<number>(4);
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const handleSeeMore = () => setVisibleCount((prev) => prev + 2);
+  const handleSeeMore = () => setVisibleCount((prev) => prev + 5);
 
   const handleUpvote = (id: number) => {
     setProducts((prev) =>
