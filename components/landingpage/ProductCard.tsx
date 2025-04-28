@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
 
   return (
     <>
-      <div className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-4 rounded-xl hover:shadow-md transition relative">
+      <div className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative">
         <div className="flex items-center gap-4" onClick={() => setIsModalOpen(true)}>
           <div>
             <img
