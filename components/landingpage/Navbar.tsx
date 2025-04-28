@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiMenu } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
+import Link from "next/link";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -29,12 +30,12 @@ export default function Navbar() {
             </a>
           </li>
           <li>
-            <a
-              href=""
+            <Link
+              href="/auth/login"
               className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] text-white px-5 py-2 rounded-md hover:opacity-90 transition"
             >
               Login
-            </a>
+            </Link>
           </li>
         </ul>
 
@@ -49,7 +50,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden mt-4 px-4 space-y-4">
+        <div className="md:hidden mt-4 space-y-4">
           <a
             href="#what"
             className="block py-2 text-white hover:text-[#0096FF] transition"
@@ -64,13 +65,13 @@ export default function Navbar() {
           >
             Features
           </a>
-          <a
-            href=""
+          <Link
+            href="/auth/login"
             className="block py-2 bg-gradient-to-r from-[#6E00FF] to-[#0096FF] text-center rounded-md text-white hover:opacity-90 transition"
             onClick={() => setIsOpen(false)}
           >
             Login
-          </a>
+          </Link>
         </div>
       )}
     </nav>
