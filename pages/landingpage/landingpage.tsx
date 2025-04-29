@@ -2,6 +2,7 @@ import Modal from '@/components/landingpage/Modal';
 import Navbar from '@/components/landingpage/Navbar';
 import ProductList from '@/components/landingpage/ProductList';
 import Sidebar from '@/components/landingpage/Sidebar';
+import SVGGeneratorModal from '@/components/landingpage/SVGGeneratorModal';
 import { mockProducts } from '@/data/mockProducts';
 import React, { useState } from 'react';
 
@@ -21,6 +22,8 @@ const LandingPage = () => {
   const [visibleCount, setVisibleCount] = useState<number>(4);
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSVGModalOpen, setIsSVGModalOpen] = useState<boolean>(false);
+
 
   const handleSeeMore = () => setVisibleCount((prev) => prev + 5);
 
@@ -133,12 +136,18 @@ const LandingPage = () => {
          </p>
          <button
            className="px-6 py-3 cursor-pointer bg-gradient-to-r from-[#6E00FF] to-[#0096FF] rounded-full font-semibold text-white hover:scale-105 transition"
-           onClick={() => console.log('Open SVG Generator Modal')}
+           onClick={() => setIsSVGModalOpen(true)}
          >
            Click here to start
          </button>
        </div>
      </section>
+
+     <SVGGeneratorModal
+  isOpen={isSVGModalOpen}
+  onClose={() => setIsSVGModalOpen(false)}
+/>
+
 
 
       {/* Footer */}
