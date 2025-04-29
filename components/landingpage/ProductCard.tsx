@@ -46,7 +46,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
         <div className="flex flex-col items-center gap-4">
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Prevent opening the modal
               onUpvote(product.id);
             }}
             className="flex flex-col items-center text-gray-400 hover:text-[#6E00FF] cursor-pointer transition"
@@ -56,7 +55,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
           </button>
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Prevent opening the modal
               onSave(product.id);
             }}
             className="text-gray-400 hover:text-[#0096FF] cursor-pointer transition"
