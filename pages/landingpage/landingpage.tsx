@@ -122,6 +122,25 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* SVG Background Generator CTA Section */}
+     <section className="py-20 bg-[#1f1f21] text-center">
+       <div className="max-w-4xl mx-auto px-6">
+         <h2 className="text-3xl md:text-5xl md:text-4xl font-bold mb-4">
+           Wanna create cool SVG backgrounds for your landing page?
+         </h2>
+         <p className="text-gray-400 text-lg md:text-xl mb-6">
+           Generate stunning, responsive SVGs that instantly level up your design — no design skills needed.
+         </p>
+         <button
+           className="px-6 py-3 cursor-pointer bg-gradient-to-r from-[#6E00FF] to-[#0096FF] rounded-full font-semibold text-white hover:scale-105 transition"
+           onClick={() => console.log('Open SVG Generator Modal')}
+         >
+           Click here to start
+         </button>
+       </div>
+     </section>
+
+
       {/* Footer */}
       <footer className="py-6 px-6 text-white text-center">
         <p className="text-sm text-gray-400">&copy; 2025 LaunchHunt. All rights reserved.</p>
