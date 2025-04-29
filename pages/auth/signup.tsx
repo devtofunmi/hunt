@@ -25,14 +25,12 @@ const SignupPage = () => {
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
       {/* Logo */}
-      <Link href="/">
-        <div className="bg-white/10 text-xl backdrop-blur-md border-b border-white/20 py-4 px-6 shadow-md w-full fixed top-0 left-0 z-50">
-          LaunchHunt
+        <div className="bg-white/10 md:bg-transparent text-xl backdrop-blur-md md:backdrop-blur-0 border-b border-white/20 md:border-none py-4 px-6 shadow-md w-full fixed top-0 left-0 z-50">
+        <Link href="/"> LaunchHunt</Link>         
         </div>
-      </Link>
 
       {/* Left side (form) */}
-      <div className="w-full md:w-3/5 bg-[#171717] text-white flex flex-col justify items-left px-10 md:px-20 py-20">
+      <div className="w-full md:w-3/5 bg-[#171717] text-white flex flex-col justify items-left px-5 md:px-10 md:px-20 py-20">
         <h1 className="text-3xl font-semibold mt-10">Welcome</h1>
 
         <p className="mt-5 text-gray-400">Find inspiration. Build better. <br /> Join LaunchHunt today.</p>
@@ -80,8 +78,8 @@ const SignupPage = () => {
       </div>
 
       {/* Right side (info) */}
-      <div className="flex w-full md:w-2/5 flex-col bg-[#262629] text-white px-10 py-20">
-        <h2 className="text-3xl font-bold mt-5 mb-4">Welcome to LaunchHunt</h2>
+      <div className="flex w-full md:w-2/5 flex-col bg-[#262629] text-white px-5 md:px-10 py-20">
+        <h2 className="text-3xl font-bold md:mt-5 mt-0 mb-4">Welcome to LaunchHunt</h2>
         <p className="text-gray-300 mb-8">
         LaunchHunt empowers indie developers by providing a comprehensive platform to discover
          innovative project inspirations, explore refined UI designs, and easily generate custom SVG backgrounds. Unlock creativity, enhance your projects, and fuel your next breakthrough idea with LaunchHunt.
