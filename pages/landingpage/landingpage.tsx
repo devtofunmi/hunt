@@ -144,9 +144,9 @@ const LandingPage = () => {
      </section>
 
      <SVGGeneratorModal
-  isOpen={isSVGModalOpen}
-  onClose={() => setIsSVGModalOpen(false)}
-/>
+        isOpen={isSVGModalOpen}
+        onClose={() => setIsSVGModalOpen(false)}
+      />
 
 
 
