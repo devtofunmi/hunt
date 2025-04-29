@@ -1,7 +1,5 @@
-// components/landingpage/SVGGeneratorModal.tsx
 import React from "react";
 import SVGGenerator from "../SVGGenerator";
-import { FaClosedCaptioning } from "react-icons/fa";
 import { GrClose } from "react-icons/gr";
 
 
@@ -22,7 +20,6 @@ const SVGGeneratorModal = ({ isOpen, onClose }: Props) => {
         >
           <GrClose size={20} />
         </button>
-        {/* <h2 className="text-md md:text-lg font-bold mb-4">SVG Background Generator</h2> */}
         <SVGGenerator />
       </div>
     </div>
