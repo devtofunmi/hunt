@@ -15,7 +15,7 @@ const SVGGeneratorModal = ({ isOpen, onClose }: Props) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center text-[#171717]">
-      <div className="bg-white text-black rounded-xl w-[85%] md:w-full max-w-3xl p-2 md:p-6 relative">
+      <div className="bg-[#18181b]  rounded-xl w-[85%] md:w-full max-w-3xl p-2 md:p-6 relative">
         <button
           onClick={onClose}
           className="absolute cursor-pointer top-4 right-4 text-gray-600 hover:text-black"

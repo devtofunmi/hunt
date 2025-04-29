@@ -81,7 +81,7 @@ const SVGBackgroundGenerator = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-5 p-2 max-w-6xl mx-auto">
+    <div className="flex flex-col md:flex-row gap-5 p-2 max-w-6xl mx-auto text-white">
       {/* Controls */}
       <div className="flex flex-col gap-4 w-full md:w-1/3">
         <label className="font-semibold">Background Type</label>
