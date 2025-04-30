@@ -46,14 +46,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <div className="mt-4 max-h-72 overflow-y-auto">
+        <div className="mt-4 max-h-72 overflow-y-auto scrollbar-hide">
           {searchTerm === '' ? (
             <p className="text-center text-gray-600">Type something to search...</p>
           ) : filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="flex items-center gap-4 p-2 border-[#27272a] border-b cursor-pointer hover:bg-[#2a2a2d]"
+                className="flex items-center  gap-4 p-2 border-[#27272a] border-b cursor-pointer hover:bg-[#2a2a2d]"
                 onClick={() => setSelectedProduct(product)}
               >
                 <img src={product.logo} alt={product.name} className="w-8 h-8 rounded-md object-cover" />
