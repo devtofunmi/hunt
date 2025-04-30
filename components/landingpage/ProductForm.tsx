@@ -1,10 +1,17 @@
-import React from 'react';
+'use client';
 
-const ProductForm = () => {
+import React, { FormEvent } from 'react';
+
+const ProductForm: React.FC = () => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle form submission logic here
+  };
+
   return (
     <div className="p-6 rounded-lg bg-[#262629]">
       <h3 className="text-lg font-semibold mb-4">Submit Your Project</h3>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="text"
           name="name"
