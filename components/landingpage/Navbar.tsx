@@ -1,27 +1,47 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { FiBox, FiChevronDown, FiChevronUp, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
-import { IoMdClose } from "react-icons/io";
-import { BiMenu } from "react-icons/bi";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  FiBox,
+  FiChevronDown,
+  FiChevronUp,
+  FiLogOut,
+  FiSettings,
+  FiUser,
+} from 'react-icons/fi';
+import { IoMdClose } from 'react-icons/io';
+import { BiMenu } from 'react-icons/bi';
 
+// Mock user data (consider replacing with real data in production)
+interface User {
+  isLoggedIn: boolean;
+  name: string;
+  image: string;
+}
 
-// Mock user data
-const user = {
-  isLoggedIn: false,
-  name: "John Doe",
-  image: "https://i.pravatar.cc/150?img=3",
+const user: User = {
+  isLoggedIn: !true,
+  name: 'John Doe',
+  image: 'https://i.pravatar.cc/150?img=3',
 };
 
-const UserDropdown = ({ dropdownOpen, toggleDropdown }: {
+interface UserDropdownProps {
   dropdownOpen: boolean;
   toggleDropdown: () => void;
+}
+
+const UserDropdown: React.FC<UserDropdownProps> = ({
+  dropdownOpen,
+  toggleDropdown,
 }) => (
   <div className="relative">
-    <button className="flex cursor-pointer items-center gap-2 text-white" onClick={toggleDropdown}>
+    <button
+      className="flex cursor-pointer items-center gap-2 text-white"
+      onClick={toggleDropdown}
+    >
       <Image
         src={user.image}
         alt="User"
@@ -29,24 +49,33 @@ const UserDropdown = ({ dropdownOpen, toggleDropdown }: {
         height={32}
         className="rounded-full"
       />
-      <span>{user.name.split(" ")[0]}</span>
+      <span>{user.name.split(' ')[0]}</span>
       {dropdownOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
     </button>
 
     {dropdownOpen && (
       <div className="absolute right-0 mt-2 w-48 bg-[#2f2f2f] text-white rounded-lg shadow-md overflow-hidden z-50">
-        <Link href="/profile" className="flex items-center px-4 py-2 hover:bg-[#171717] text-sm text-white">
+        <Link
+          href="/dashboard/profile"
+          className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm"
+        >
           <FiUser className="mr-2" /> Profile
         </Link>
-        <Link href="/settings" className="flex items-center px-4 py-2 hover:bg-[#171717] text-sm text-white">
+        <Link
+          href="/dashboard/settings"
+          className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm"
+        >
           <FiSettings className="mr-2" /> Settings
         </Link>
-        <Link href="/products" className="flex items-center px-4 py-2 hover:bg-[#171717] text-sm text-white">
-          <FiBox className="mr-2" /> Products
+        <Link
+          href="/dashboard/products"
+          className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm"
+        >
+          <FiBox className="mr-2" /> My Products
         </Link>
         <button
-          onClick={() => alert("Logged out")}
-          className="flex items-center px-4 py-2 w-full text-left hover:bg-red-500 cursor-pointer text-sm text-white"
+          onClick={() => alert('Logged out')}
+          className="flex items-center px-4 py-2 w-full text-left hover:bg-red-500 text-sm"
         >
           <FiLogOut className="mr-2" /> Logout
         </button>
@@ -55,12 +84,12 @@ const UserDropdown = ({ dropdownOpen, toggleDropdown }: {
   </div>
 );
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
-  const toggleDropdown = () => setDropdownOpen(prev => !prev);
+  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
 
   return (
     <nav className="bg-white/10 backdrop-blur-md border-b border-white/20 py-4 px-6 shadow-md w-full fixed top-0 left-0 z-50">
@@ -68,7 +97,7 @@ export default function Navbar() {
         {/* Logo */}
         <div
           className="text-xl font-bold text-white cursor-pointer"
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
         >
           LaunchHunt
         </div>
@@ -76,18 +105,26 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-8 items-center">
           <li>
-            <a href="#what" className="text-white hover:text-[#0096FF] transition">
+            <a
+              href="#what"
+              className="text-white hover:text-[#0096FF] transition"
+            >
               What is LaunchHunt?
             </a>
           </li>
           <li>
-            <a href="#features" className="text-white hover:text-[#0096FF] transition">
+            <a
+              href="#features"
+              className="text-white hover:text-[#0096FF] transition"
+            >
               Features
             </a>
           </li>
-
           {user.isLoggedIn ? (
-            <UserDropdown dropdownOpen={dropdownOpen} toggleDropdown={toggleDropdown} />
+            <UserDropdown
+              dropdownOpen={dropdownOpen}
+              toggleDropdown={toggleDropdown}
+            />
           ) : (
             <li>
               <Link
@@ -103,9 +140,15 @@ export default function Navbar() {
         {/* Mobile Right Side */}
         <div className="flex items-center gap-3 md:hidden">
           {user.isLoggedIn && (
-            <UserDropdown dropdownOpen={dropdownOpen} toggleDropdown={toggleDropdown} />
+            <UserDropdown
+              dropdownOpen={dropdownOpen}
+              toggleDropdown={toggleDropdown}
+            />
           )}
-          <button className="text-white cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className="text-white cursor-pointer"
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <IoMdClose size={28} /> : <BiMenu size={28} />}
           </button>
         </div>
@@ -141,5 +184,6 @@ export default function Navbar() {
       )}
     </nav>
   );
-}
+};
 
+export default Navbar;
