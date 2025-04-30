@@ -1,18 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, ChangeEvent, JSX } from "react";
 import html2canvas from "html2canvas";
 
 type BackgroundType = "blob" | "wave" | "hills" | "radial" | "slanted";
 
-const SVGBackgroundGenerator = () => {
+const SVGBackgroundGenerator: React.FC = () => {
   const [background, setBackground] = useState<BackgroundType>("blob");
-  const [primaryColor, setPrimaryColor] = useState("#6E00FF");
-  const [secondaryColor, setSecondaryColor] = useState("#0096FF");
-  const [width, setWidth] = useState(1440);
-  const [height, setHeight] = useState(320);
-  const [customClass, setCustomClass] = useState("w-full h-60");
-  const svgRef = useRef<SVGSVGElement>(null);
+  const [primaryColor, setPrimaryColor] = useState<string>("#6E00FF");
+  const [secondaryColor, setSecondaryColor] = useState<string>("#0096FF");
+  const [width, setWidth] = useState<number>(1440);
+  const [height, setHeight] = useState<number>(320);
+  const [customClass, setCustomClass] = useState<string>("w-full h-60");
 
-  const getBackgroundSVG = () => {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const getBackgroundSVG = (): JSX.Element | null => {
     switch (background) {
       case "blob":
         return (
@@ -57,18 +58,19 @@ const SVGBackgroundGenerator = () => {
     }
   };
 
-  const downloadSVG = () => {
-    const svgElement = svgRef.current!;
-    const svgData = new XMLSerializer().serializeToString(svgElement);
+  const downloadSVG = (): void => {
+    if (!svgRef.current) return;
+    const svgData = new XMLSerializer().serializeToString(svgRef.current);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = "background.svg";
     link.click();
+    URL.revokeObjectURL(url);
   };
 
-  const downloadPNG = async () => {
+  const downloadPNG = async (): Promise<void> => {
     const svgWrapper = document.getElementById("svg-wrapper");
     if (!svgWrapper) return;
 
@@ -87,7 +89,9 @@ const SVGBackgroundGenerator = () => {
         <label className="font-semibold">Background Type</label>
         <select
           value={background}
-          onChange={(e) => setBackground(e.target.value as BackgroundType)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            setBackground(e.target.value as BackgroundType)
+          }
           className="p-2 border border-gray-300 rounded"
         >
           <option value="blob">Blob Mesh</option>
@@ -102,7 +106,9 @@ const SVGBackgroundGenerator = () => {
           <input
             type="color"
             value={primaryColor}
-            onChange={(e) => setPrimaryColor(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setPrimaryColor(e.target.value)
+            }
             className="ml-2"
           />
         </div>
@@ -112,7 +118,9 @@ const SVGBackgroundGenerator = () => {
           <input
             type="color"
             value={secondaryColor}
-            onChange={(e) => setSecondaryColor(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setSecondaryColor(e.target.value)
+            }
             className="ml-2"
           />
         </div>
@@ -123,7 +131,9 @@ const SVGBackgroundGenerator = () => {
             <input
               type="number"
               value={width}
-              onChange={(e) => setWidth(Number(e.target.value))}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setWidth(Number(e.target.value))
+              }
               className="w-24 ml-2 md:ml-0 p-1 border border-gray-300 rounded"
             />
           </div>
@@ -132,7 +142,9 @@ const SVGBackgroundGenerator = () => {
             <input
               type="number"
               value={height}
-              onChange={(e) => setHeight(Number(e.target.value))}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setHeight(Number(e.target.value))
+              }
               className="w-24 ml-2 md:ml-0 p-1 border border-gray-300 rounded"
             />
           </div>
@@ -143,7 +155,9 @@ const SVGBackgroundGenerator = () => {
           <input
             type="text"
             value={customClass}
-            onChange={(e) => setCustomClass(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setCustomClass(e.target.value)
+            }
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
