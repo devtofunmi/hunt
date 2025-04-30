@@ -1,4 +1,3 @@
-// src/data/mockProducts.ts
 export type Product = {
     id: number;
     name: string;
