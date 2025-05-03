@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Footer from '@/components/landingpage/Footer';
 import Modal from '@/components/landingpage/Modal';
 import Navbar from '@/components/landingpage/Navbar';
@@ -22,6 +22,17 @@ const LandingPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSVGModalOpen, setIsSVGModalOpen] = useState<boolean>(false);
+  const [welcomeModal, setWelcomeModal] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shouldShow = localStorage.getItem('showWelcomeModal');
+      if (shouldShow === 'true') {
+        setWelcomeModal(true);
+        localStorage.removeItem('showWelcomeModal');
+      }
+    }
+  }, []);
 
   const handleSeeMore = (): void => {
     setVisibleCount((prev) => prev + 5);
@@ -154,6 +165,27 @@ const LandingPage: React.FC = () => {
         onClose={() => setIsSVGModalOpen(false)}
       />
 
+      {/* Welcome Modal */}
+      {welcomeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#171717] p-6 rounded-xl shadow-lg w-96 md:w-[450px] relative">
+            <button
+              onClick={() => setWelcomeModal(false)}
+              className="absolute cursor-pointer top-2 right-3 text-2xl font-bold text-gray-500 hover:text-gray-700"
+            >
+              ×
+            </button>
+            <div className="flex flex-col items-center justify-center text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-[#6E00FF] mt-5">Welcome to LaunchHunt!</h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              You've successfully logged in. Start exploring amazing developer projects now!
+            </p>
+            </div>
+            
+          </div>
+        </div>
+      )}
+    
       <Footer />
     </main>
   );
