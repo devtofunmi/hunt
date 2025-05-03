@@ -5,7 +5,6 @@ import React, { FormEvent } from 'react';
 const ProductForm: React.FC = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
   };
 
   return (
