@@ -12,11 +12,8 @@ const SignupPage: React.FC = () => {
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Simulate API call
     if (username && email && password) {
-      // Simulated successful signup
-      router.push('/dashboard');
+      router.push('/auth/login');
     } else {
       setError('Invalid signup credentials');
     }
