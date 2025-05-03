@@ -35,7 +35,7 @@ const CreateProductModal: React.FC<ModalProps> = ({ onClose, onAddProduct }) => 
       .filter(Boolean);
 
     const newProduct: Product = {
-      id: 0, // will be replaced in parent
+      id: 0, 
       title,
       logoUrl,
       shortDescription,
