@@ -16,8 +16,10 @@ const LoginPage: React.FC = () => {
 
     // Simulated login logic
     if (email === 'admin@launchhunt.com' && password === 'password') {
-      router.push('/dashboard');
-    } else {
+      localStorage.setItem('showWelcomeModal', 'true');
+      router.push('/');
+    }
+     else {
       setError('Invalid email or password');
     }
   };
@@ -54,7 +56,7 @@ const LoginPage: React.FC = () => {
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#6E00FF] to-[#0096FF] py-3 rounded-xl font-semibold hover:opacity-90 transition duration-200"
+            className="w-full cursor-pointer bg-gradient-to-r from-[#6E00FF] to-[#0096FF] py-3 rounded-xl font-semibold hover:opacity-90 transition duration-200"
           >
             Log In
           </button>
