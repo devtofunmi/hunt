@@ -23,7 +23,7 @@ interface User {
 }
 
 const user: User = {
-  isLoggedIn: true,
+  isLoggedIn: !true,
   name: 'John Doe',
   image: 'https://i.pravatar.cc/150?img=3',
 };
