@@ -15,7 +15,7 @@ import {
 import { IoMdClose } from 'react-icons/io';
 import { BiMenu } from 'react-icons/bi';
 
-// Mock user data (consider replacing with real data in production)
+// Mock user data 
 interface User {
   isLoggedIn: boolean;
   name: string;
@@ -23,7 +23,7 @@ interface User {
 }
 
 const user: User = {
-  isLoggedIn: !true,
+  isLoggedIn: true,
   name: 'John Doe',
   image: 'https://i.pravatar.cc/150?img=3',
 };
