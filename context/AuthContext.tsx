@@ -1,66 +1,81 @@
+'use client';
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 interface AuthContextType {
   user: any;
-  token: string | null;
-  setToken: (token: string | null) => void;
-  setUser: (user: any) => void;
+  setUser: (user: any, token?: string) => void;
   logout: () => void;
+  accessToken: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setTokenState] = useState<string | null>(null);
   const [user, setUserState] = useState<any>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch user data from the backend using the token in the cookie
     const fetchUserData = async () => {
-      const res = await fetch('/profile', {
-        method: 'GET',
-        credentials: 'include', // Ensures cookies are sent
-      });
-
-      if (res.ok) {
-        const userData = await res.json();
-        setUserState(userData.user); // Assuming user data is returned
-      } else {
-        // Handle unauthenticated state
-        setUserState(null);
+      try {
+        const res = await fetch('https://launchhunt.up.railway.app/profile', {
+          credentials: 'include', // 👈 required to send cookies
+        });
+  
+        if (res.ok) {
+          const data = await res.json();
+          setUserState(data.user);
+  
+          // Save new access token to localStorage if you still want to use it elsewhere
+          if (data.accessToken) {
+            setAccessToken(data.accessToken);
+            localStorage.setItem('accessToken', data.accessToken);
+          }
+        } else {
+          handleLogout();
+        }
+      } catch (err) {
+        console.error('Failed to fetch user:', err);
+        handleLogout();
       }
     };
-
+  
     fetchUserData();
   }, []);
+  
 
-  const setToken = (newToken: string | null) => {
-    setTokenState(newToken);
-    if (newToken) {
-      // Optionally, send the token to the backend (to set the cookie)
-      fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: newToken }),
-      });
+  const setUser = (user: any, token?: string) => {
+    setUserState(user);
+    if (token) {
+      setAccessToken(token);
+      localStorage.setItem('accessToken', token);
     }
   };
 
-  const setUser = (user: any) => {
-    setUserState(user);
-  };
-
-  const logout = async () => {
-    await fetch('/logout', { method: 'POST' }); // Send logout request to clear the cookie
-    setToken(null);
-    setUser(null);
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    setAccessToken(null);
+    setUserState(null);
     router.push('/auth/login');
   };
 
+  const logout = async () => {
+    try {
+      await fetch('https://launchhunt.up.railway.app/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      handleLogout();
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, setToken, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, accessToken }}>
       {children}
     </AuthContext.Provider>
   );
@@ -71,4 +86,3 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
-
