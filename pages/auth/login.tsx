@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // 🔐 Required to receive HttpOnly cookies
+        credentials: 'include', //  Required to receive HttpOnly cookies
         body: JSON.stringify({ username, password }),
       });
   
@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
   
       const { user, accessToken } = data;
   
-      // ✅ Save to context (refreshToken is stored in cookie, so not in JS)
+      // Save to context (refreshToken is stored in cookie, so not in JS)
       setUser(user, accessToken);
   
       // Optional: flags or onboarding states
