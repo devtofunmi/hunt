@@ -11,40 +11,42 @@ const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const router = useRouter();
-  const { setToken, setUser } = useAuth(); 
+
+  const { setUser } = useAuth(); 
   const [loading, setLoading] = useState<boolean>(false);
 
+  
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       const res = await fetch('https://launchhunt.up.railway.app/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // 🔐 Required to receive HttpOnly cookies
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await res.json();
-
+  
       if (!res.ok) {
         toast.error(data.message || 'Invalid username or password.');
         return;
       }
-
-      const { accessToken, user } = data;
-
-      if (accessToken) {
-        setToken(accessToken);
-        setUser(user);
-        localStorage.setItem('showWelcomeModal', 'true');
-        toast.success('Logged in successfully!');
-        router.push('/');
-      } else {
-        toast.error('Login failed: No token received.');
-      }
+  
+      const { user, accessToken } = data;
+  
+      // ✅ Save to context (refreshToken is stored in cookie, so not in JS)
+      setUser(user, accessToken);
+  
+      // Optional: flags or onboarding states
+      localStorage.setItem('showWelcomeModal', 'true');
+  
+      toast.success('Logged in successfully!');
+      router.push('/');
     } catch (err) {
       console.error(err);
       toast.error('Failed to connect. Please try again later.');
@@ -52,6 +54,10 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
+  
+  
+  
+  
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
