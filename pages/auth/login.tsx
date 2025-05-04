@@ -4,28 +4,58 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FaRocket, FaDesktop, FaCog } from 'react-icons/fa';
+import { useAuth } from '@/context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { setToken, setUser } = useAuth(); 
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Simulated login logic
-    if (email === 'admin@launchhunt.com' && password === 'password') {
-      localStorage.setItem('showWelcomeModal', 'true');
-      router.push('/');
-    }
-     else {
-      setError('Invalid email or password');
+    try {
+      const res = await fetch('https://launchhunt.up.railway.app/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || 'Invalid username or password.');
+        return;
+      }
+
+      const { accessToken, user } = data;
+
+      if (accessToken) {
+        setToken(accessToken);
+        setUser(user);
+        localStorage.setItem('showWelcomeModal', 'true');
+        toast.success('Logged in successfully!');
+        router.push('/');
+      } else {
+        toast.error('Login failed: No token received.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to connect. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
+      <ToastContainer position="top-center"/>
       {/* Top Logo Bar */}
       <div className="bg-white/10 md:bg-transparent text-xl backdrop-blur-md md:backdrop-blur-0 border-b border-white/20 md:border-none py-4 px-6 shadow-md w-full fixed top-0 left-0 z-50">
         <Link href="/">LaunchHunt</Link>
@@ -38,11 +68,11 @@ const LoginPage: React.FC = () => {
 
         <form onSubmit={handleLogin} className="space-y-5 w-full max-w-md mt-10">
           <input
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Username"
             className="w-full px-4 py-3 border border-white rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6E00FF] transition"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input
@@ -53,12 +83,15 @@ const LoginPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
             type="submit"
-            className="w-full cursor-pointer bg-gradient-to-r from-[#6E00FF] to-[#0096FF] py-3 rounded-xl font-semibold hover:opacity-90 transition duration-200"
+            disabled={loading}
+            className={`w-full cursor-pointer bg-gradient-to-r from-[#6E00FF] to-[#0096FF] py-3 rounded-xl font-semibold transition duration-200 ${
+              loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+            }`}
           >
-            Log In
+            {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
