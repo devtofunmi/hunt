@@ -168,7 +168,7 @@ const LandingPage: React.FC = () => {
       {/* Welcome Modal */}
       {welcomeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#171717] p-6 rounded-xl shadow-lg w-96 md:w-[450px] relative">
+          <div className="bg-[#171717] p-6 rounded-xl shadow-lg w-86 md:w-96 relative">
             <button
               onClick={() => setWelcomeModal(false)}
               className="absolute cursor-pointer top-2 right-3 text-2xl font-bold text-gray-500 hover:text-gray-700"
