@@ -66,7 +66,7 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      const res = await axios.post('https://launchhunt.up.railway.app/auth/signup', {
+      const res = await axios.post('https://hunt.up.railway.app/auth/signup', {
         username,
         email,
         password,
@@ -80,9 +80,12 @@ const SignupPage: React.FC = () => {
       } else {
         toast.error('Signup failed. Please try again.');
       }
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Signup failed.');
-    } finally {
+    }catch (err: any) {
+      console.error(err.response || err);
+      toast.error('Something went wrong on the server. Please try again later.');
+    }
+    
+     finally {
       setLoading(false);
     }
   };
