@@ -21,30 +21,28 @@ const LoginPage: React.FC = () => {
     setLoading(true);
   
     try {
-      const res = await fetch('https://launchhunt.up.railway.app/auth/login', {
+      const res = await fetch('https://hunt.up.railway.app/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', //  Required to receive HttpOnly cookies
+        credentials: 'include', // crucial to include cookies
         body: JSON.stringify({ username, password }),
       });
   
       const data = await res.json();
   
       if (!res.ok) {
-        toast.error(data.message || 'Invalid username or password.');
+        toast.error(data.error || 'Invalid username or password.');
         return;
       }
   
       const { user, accessToken } = data;
   
-      // Save to context (refreshToken is stored in cookie, so not in JS)
-      setUser(user, accessToken);
-  
-      // Optional: flags or onboarding states
+      localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('showWelcomeModal', 'true');
   
+      setUser(user, accessToken);
       toast.success('Logged in successfully!');
       router.push('/');
     } catch (err) {
@@ -54,10 +52,7 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
-  
-  
-  
-  
+    
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
