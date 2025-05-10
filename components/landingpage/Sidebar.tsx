@@ -1,7 +1,6 @@
 'use client';
-
 import React from 'react';
-import ProductForm from './ProductForm';
+import Analytics from './Analytics';
 
 interface SidebarProps {
   onOpenModal: () => void;
@@ -20,7 +19,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
             readOnly
           />
         </div>
-        <ProductForm />
+        <Analytics onOpenModal={function (): void {
+          throw new Error('Function not implemented.');
+        } } />
       </div>
     </aside>
   );
