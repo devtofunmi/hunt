@@ -1,8 +1,13 @@
+'use client';
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FiBookmark } from 'react-icons/fi';
 import { IoIosArrowDropup } from 'react-icons/io';
 import Modal from './ProductModal';
 import { Product } from '@/data/mockProducts';
+import { useAuth } from '@/context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
 
 type ProductCardProps = {
   product: Product;
@@ -12,30 +17,53 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const isLoggedIn = !!user;
 
   const handleModalClose = () => setIsModalOpen(false);
 
+  const redirectToLogin = () => {
+    toast.error('You must be logged in to perform this action.');
+    setTimeout(() => router.push('/auth/login'), 1500); 
+  };
+
+  const handleUpvote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      redirectToLogin();
+      return;
+    }
+    onUpvote(product.id);
+  };
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      redirectToLogin();
+      return;
+    }
+    onSave(product.id);
+  };
+
   return (
     <>
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
+
       <div className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative">
         <div className="flex items-center gap-4" onClick={() => setIsModalOpen(true)}>
-          <div>
-            <img
-              src={product.logo}
-              alt={product.name}
-              className="md:w-15 md:h-15 h-10 w-10 rounded-md object-cover"
-            />
-          </div>
-
+          <img
+            src={product.logo}
+            alt={product.name}
+            className="md:w-15 md:h-15 h-10 w-10 rounded-md object-cover"
+          />
           <div>
             <h3 className="font-semibold text-[15px]">{product.name}</h3>
             <p className="text-[12px] text-gray-400 mt-0 md:mt-1">{product.description}</p>
             <div className="flex flex-wrap gap-2 mt-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
               {product.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-100 text-gray-700 text-xs px-2 rounded-md"
-                >
+                <span key={index} className="bg-gray-100 text-gray-700 text-xs px-2 rounded-md">
                   {tag}
                 </span>
               ))}
@@ -45,28 +73,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
 
         <div className="flex flex-col items-center gap-4">
           <button
-            onClick={(e) => {
-              onUpvote(product.id);
-            }}
+            onClick={handleUpvote}
             className="flex flex-col items-center text-gray-400 hover:text-[#6E00FF] cursor-pointer transition"
           >
             <IoIosArrowDropup size={20} />
             <span className="text-xs">{product.upvotes}</span>
           </button>
           <button
-            onClick={(e) => {
-              onSave(product.id);
-            }}
+            onClick={handleSave}
             className="text-gray-400 hover:text-[#0096FF] cursor-pointer transition"
           >
-            <FiBookmark size={20} fill={product.saved ? "#0096FF" : "none"} />
+            <FiBookmark size={20} fill={product.saved ? '#0096FF' : 'none'} />
           </button>
         </div>
       </div>
 
-      {isModalOpen && (
-        <Modal product={product} onClose={handleModalClose} />
-      )}
+      {isModalOpen && <Modal product={product} onClose={handleModalClose} />}
     </>
   );
 };
