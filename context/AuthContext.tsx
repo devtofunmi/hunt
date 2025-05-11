@@ -28,27 +28,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const publicRoutes = ['/', '/auth/login', '/auth/signup'];
   const isPublicRoute = publicRoutes.includes(router.pathname);
 
-  // Check for accessToken in localStorage on first load
+  // Load accessToken from localStorage on first mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('accessToken');
-      if (token) setAccessToken(token);
+    if (typeof window === 'undefined') return;
+
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setAccessToken(token);
+    } else {
+      setLoading(false); // No token, mark loading complete
     }
   }, []);
 
-  // Fetch user data after token is available
+  // Fetch user data only after accessToken is set
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!accessToken) {
-        handleLogout(false);
-        return;
-      }
-
       try {
         const res = await fetch('https://hunt.up.railway.app/profile', {
           credentials: 'include',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
@@ -58,13 +57,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           if (data.accessToken) {
             setAccessToken(data.accessToken);
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('accessToken', data.accessToken);
-            }
+            localStorage.setItem('accessToken', data.accessToken);
           }
         } else {
-          // If the token is expired or invalid, try to refresh it
-          if (!isPublicRoute) await refreshAccessToken();
+          if (!isPublicRoute) {
+            await refreshAccessToken();
+          }
         }
       } catch (err) {
         console.error('Failed to fetch user:', err);
@@ -74,18 +72,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    fetchUserData();
-  }, [accessToken, router.pathname, isPublicRoute]);
+    if (accessToken) {
+      fetchUserData();
+    }
+  }, [accessToken, isPublicRoute, router.pathname]);
 
   const refreshAccessToken = async () => {
     try {
       const res = await fetch('https://hunt.up.railway.app/auth/refresh', {
         method: 'POST',
-        credentials: 'include', // Include the HttpOnly refresh cookie
+        credentials: 'include',
       });
-  
+
       if (!res.ok) throw new Error('Failed to refresh access token');
-  
+
       const data = await res.json();
       setAccessToken(data.accessToken);
       localStorage.setItem('accessToken', data.accessToken);
@@ -95,7 +95,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       handleLogout(false);
     }
   };
-  
 
   const setUser = (user: User, token?: string) => {
     setUserState(user);
@@ -132,7 +131,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout, accessToken, loading }}>
+    <AuthContext.Provider
+      value={{ user, setUser, logout, accessToken, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -143,4 +144,5 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
+
 export default AuthContext;
