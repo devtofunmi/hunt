@@ -7,52 +7,85 @@ import { IoIosArrowDropup } from 'react-icons/io';
 import Modal from './ProductModal';
 import { Product } from '@/data/mockProducts';
 import { useAuth } from '@/context/AuthContext';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 type ProductCardProps = {
   product: Product;
-  onUpvote: (id: number) => void;
-  onSave: (id: number) => void;
+  refreshProducts: () => void;
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, refreshProducts }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user } = useAuth();
-  const router = useRouter();
+  const [saved, setSaved] = useState(product.saved ?? false);
+  const [upvotes, setUpvotes] = useState(product.upvotes ?? 0);
 
-  const isLoggedIn = !!user;
+  const { user, accessToken } = useAuth();
+  const router = useRouter();
+  const isLoggedIn = !!user && !!accessToken;
 
   const handleModalClose = () => setIsModalOpen(false);
 
   const redirectToLogin = () => {
     toast.error('You must be logged in to perform this action.');
-    setTimeout(() => router.push('/auth/login'), 1500); 
+    setTimeout(() => router.push('/auth/login'), 1500);
   };
 
-  const handleUpvote = (e: React.MouseEvent) => {
+  const handleUpvote = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isLoggedIn) {
-      redirectToLogin();
-      return;
+    if (!isLoggedIn) return redirectToLogin();
+
+    try {
+      const res = await fetch(`https://prettybio.up.railway.app/products/${product.id}/upvote`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        if (data?.error === 'Already upvoted') {
+          toast.info('You already upvoted this product');
+        } else {
+          throw new Error(data?.error || 'Failed to upvote');
+        }
+        return;
+      }
+
+      setUpvotes((prev) => prev + 1);
+    } catch (err) {
+      toast.error('Failed to upvote');
     }
-    onUpvote(product.id);
   };
 
-  const handleSave = (e: React.MouseEvent) => {
+  const handleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isLoggedIn) {
-      redirectToLogin();
-      return;
+    if (!isLoggedIn) return redirectToLogin();
+
+    try {
+      const res = await fetch(`https://prettybio.up.railway.app/products/${product.id}/save`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to save');
+
+      const data = await res.json();
+      setSaved(data.saved);
+    } catch (err) {
+      toast.error('Failed to save');
     }
-    onSave(product.id);
   };
 
   return (
     <>
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
-
-      <div className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative">
-        <div className="flex items-center gap-4" onClick={() => setIsModalOpen(true)}>
+      <div
+        className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative"
+        onClick={() => setIsModalOpen(true)}
+      >
+        <div className="flex items-center gap-4">
           <img
             src={product.logo}
             alt={product.name}
@@ -74,16 +107,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
         <div className="flex flex-col items-center gap-4">
           <button
             onClick={handleUpvote}
-            className="flex flex-col items-center text-gray-400 hover:text-[#6E00FF] cursor-pointer transition"
+            className="flex flex-col items-center text-gray-400 hover:text-[#6E00FF] transition"
           >
             <IoIosArrowDropup size={20} />
-            <span className="text-xs">{product.upvotes}</span>
+            <span className="text-xs">{upvotes}</span>
           </button>
           <button
             onClick={handleSave}
-            className="text-gray-400 hover:text-[#0096FF] cursor-pointer transition"
+            className="text-gray-400 hover:text-[#0096FF] transition"
           >
-            <FiBookmark size={20} fill={product.saved ? '#0096FF' : 'none'} />
+            <FiBookmark size={20} fill={saved ? '#0096FF' : 'none'} />
           </button>
         </div>
       </div>
