@@ -1,43 +1,37 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
+import { Product } from '@/data/mockProducts';
+import SkeletonCard from './SkeletonCard';
 
-type Product = {
-  id: number;
-  name: string;
-  description: string;
-  tags: string[];
-  logo: string;
-  upvotes: number;
-  saved: boolean;
-};
+const ProductList = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-type ProductListProps = {
-  products: Product[];
-  visibleCount: number;
-  onUpvote: (id: number) => void;
-  onSave: (id: number) => void;
-  onSeeMore: () => void;
-};
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('https://prettybio.up.railway.app/products');
+      const data = await res.json();
+      setProducts(data.products);
+    } catch (err) {
+      console.error('Failed to fetch products');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const ProductList: React.FC<ProductListProps> = ({ products, visibleCount, onUpvote, onSave, onSeeMore }) => {
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
-    <div className="md:col-span-2 md:mt-20">
-      <h2 className="text-2xl font-bold mb-6 leading[30px]">Find what others built. Create<br /> something better.</h2>
-      <div className="flex flex-col gap-6">
-        {products.slice(0, visibleCount).map((product) => (
-          <ProductCard key={product.id} product={product} onUpvote={onUpvote} onSave={onSave} />
-        ))}
-      </div>
-      {visibleCount < products.length && (
-        <div className="flex justify-center mt-10">
-          <button
-            onClick={onSeeMore}
-            className="px-6 py-2 w-full cursor-pointer rounded-md text-white bg-gradient-to-r from-[#6E00FF] to-[#0096FF] hover:opacity-90 transition"
-          >
-            See More
-          </button>
-        </div>
-      )}
+    <div className="space-y-4">
+      {loading
+        ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={idx} />)
+        : products.map(product => (
+            <ProductCard key={product.id} product={product} refreshProducts={fetchProducts} />
+          ))}
     </div>
   );
 };
