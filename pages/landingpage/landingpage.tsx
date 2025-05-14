@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import Footer from '@/components/landingpage/Footer';
 import Modal from '@/components/landingpage/Modal';
@@ -5,26 +6,39 @@ import Navbar from '@/components/landingpage/Navbar';
 import ProductList from '@/components/landingpage/ProductList';
 import Sidebar from '@/components/landingpage/Sidebar';
 import SVGGeneratorModal from '@/components/landingpage/SVGGeneratorModal';
-import { mockProducts } from '@/data/mockProducts';
+import { Product } from '@/types'; 
 
-type Product = {
-  id: number;
-  name: string;
-  description: string;
-  tags: string[];
-  logo: string;
-  upvotes: number;
-  saved: boolean;
-};
+
 
 const LandingPage: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState<number>(4);
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSVGModalOpen, setIsSVGModalOpen] = useState<boolean>(false);
   const [welcomeModal, setWelcomeModal] = useState(false);
 
   useEffect(() => {
+    // Fetch products from the backend
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('https://launchhunt.up.railway.app/products');
+        const data = await res.json();
+        // Ensure every product has a boolean 'saved' property
+        setProducts(
+          data.map((product: any) => ({
+            ...product,
+            id: typeof product.id === 'string' ? product.id : String(product.id),
+            saved: typeof product.saved === 'boolean' ? product.saved : false,
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      }
+    };
+
+    fetchProducts();
+
+    // Welcome modal logic
     if (typeof window !== 'undefined') {
       const shouldShow = localStorage.getItem('showWelcomeModal');
       if (shouldShow === 'true') {
@@ -41,7 +55,7 @@ const LandingPage: React.FC = () => {
   const handleUpvote = (id: number): void => {
     setProducts((prev) =>
       prev.map((product) =>
-        product.id === id
+        String(product.id) === String(id)
           ? { ...product, upvotes: product.upvotes + 1 }
           : product
       )
@@ -51,7 +65,7 @@ const LandingPage: React.FC = () => {
   const handleSave = (id: number): void => {
     setProducts((prev) =>
       prev.map((product) =>
-        product.id === id ? { ...product, saved: !product.saved } : product
+        String(product.id) === String(id) ? { ...product, saved: !product.saved } : product
       )
     );
   };
@@ -109,7 +123,7 @@ const LandingPage: React.FC = () => {
       <section id="features" className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
+            {[ 
               {
                 title: 'Find Similar Projects',
                 description:
@@ -176,16 +190,15 @@ const LandingPage: React.FC = () => {
               ×
             </button>
             <div className="flex flex-col items-center justify-center text-center">
-            <h2 className="text-2xl font-semibold mb-4 text-[#6E00FF] mt-5">Welcome to LaunchHunt!</h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              You've successfully logged in. Start exploring amazing developer projects now!
-            </p>
+              <h2 className="text-2xl font-semibold mb-4 text-[#6E00FF] mt-5">Welcome to LaunchHunt!</h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                You've successfully logged in. Start exploring amazing developer projects now!
+              </p>
             </div>
-            
           </div>
         </div>
       )}
-    
+
       <Footer />
     </main>
   );
