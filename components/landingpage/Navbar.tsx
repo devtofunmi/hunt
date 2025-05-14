@@ -39,19 +39,21 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ dropdownOpen, toggleDropdow
       </button>
 
       {dropdownOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-[#2f2f2f] text-white rounded-lg shadow-md overflow-hidden z-50">
-          <Link href="/dashboard/profile" className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm">
+        <div className="absolute right-0 mt-2 w-44 bg-[#2f2f2f] text-white rounded-xl shadow-md overflow-hidden z-50">
+          <div className="flex  flex-col justify-center p-4">
+          <Link href="/dashboard/profile" className="flex items-center px-4 py-2 rounded-md hover:bg-[#424242] text-sm">
             <FiUser className="mr-2" /> Profile
           </Link>
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm">
+          <Link href="/dashboard/settings" className="flex items-center px-4 py-2 rounded-md hover:bg-[#424242] text-sm">
             <FiSettings className="mr-2" /> Settings
           </Link>
-          <Link href="/dashboard/products" className="flex items-center px-4 py-2 hover:bg-[#27272a] text-sm">
+          <Link href="/dashboard/products" className="flex items-center px-4 py-2 rounded-md hover:bg-[#424242] text-sm">
             <FiBox className="mr-2" /> My Products
           </Link>
-          <button onClick={onLogout} className="flex items-center px-4 py-2 w-full text-left hover:bg-red-500 text-sm">
-            <FiLogOut className="mr-2" /> Logout
+          <button onClick={onLogout} className="flex items-center px-4 py-2  text-left rounded-md hover:bg-red-400 text-sm">
+            <FiLogOut className="mr-2 text-red-400" /> Logout
           </button>
+          </div>
         </div>
       )}
     </div>
