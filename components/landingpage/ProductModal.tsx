@@ -1,14 +1,16 @@
+'use client';
+
 import React from 'react';
 import { FiX } from 'react-icons/fi';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   tags: string[];
   logo: string;
   upvotes: number;
-  saved: boolean;
+  saved?: boolean;
 };
 
 type ProductModalProps = {
@@ -48,7 +50,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
           </div>
           <div className="flex gap-4 mt-4">
             <span>🔥 {product.upvotes}</span>
-            <span>{product.saved ? '💾 Saved' : '📦 Not Saved'}</span>
+            <span>{product.saved ?? false ? '💾 Saved' : '📦 Not Saved'}</span>
           </div>
         </div>
       </div>
