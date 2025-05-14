@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import { IoClose } from 'react-icons/io5';
+import { Product } from '@/types';
 
-type Product = {
-  id: number;
-  name: string;
-  description: string;
-  tags: string[];
-  logo: string;
-  upvotes: number;
-  saved: boolean;
-};
 
 type ModalProps = {
   isOpen: boolean;
