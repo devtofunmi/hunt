@@ -5,16 +5,18 @@ import { useRouter } from 'next/navigation';
 import { FiBookmark } from 'react-icons/fi';
 import { IoIosArrowDropup } from 'react-icons/io';
 import Modal from './ProductModal';
-import { Product } from '@/data/mockProducts';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
+import { Product } from '@/types';
 
-type ProductCardProps = {
+interface ProductCardProps {
   product: Product;
-  refreshProducts: () => void;
-};
+  onUpvote: (id: number) => void;
+  onSave: (id: number) => void;
+}
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, refreshProducts }) => {
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [saved, setSaved] = useState(product.saved ?? false);
   const [upvotes, setUpvotes] = useState(product.upvotes ?? 0);
@@ -88,12 +90,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, refreshProducts }) =
         <div className="flex items-center gap-4">
           <img
             src={product.logo}
-            alt={product.name}
+            alt={product.title}
             className="md:w-15 md:h-15 h-10 w-10 rounded-md object-cover"
           />
           <div>
-            <h3 className="font-semibold text-[15px]">{product.name}</h3>
-            <p className="text-[12px] text-gray-400 mt-0 md:mt-1">{product.description}</p>
+            <h3 className="font-semibold text-[15px]">{product.title}</h3>
+            <p className="text-[12px] text-gray-400 mt-0 md:mt-1">{product.shortDescription}</p>
             <div className="flex flex-wrap gap-2 mt-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
               {product.tags.map((tag, index) => (
                 <span key={index} className="bg-gray-100 text-gray-700 text-xs px-2 rounded-md">
