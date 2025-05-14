@@ -1,37 +1,41 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ProductCard from './ProductCard';
-import { Product } from '@/data/mockProducts';
+import { Product } from '@/types';
 import SkeletonCard from './SkeletonCard';
 
-const ProductList = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ProductListProps {
+  products: Product[]; // Make sure the products are passed as props to this component
+  visibleCount: number;
+  onUpvote: (id: number) => void;
+  onSave: (id: number) => void;
+  onSeeMore: () => void;
+}
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('https://prettybio.up.railway.app/products');
-      const data = await res.json();
-      setProducts(data.products);
-    } catch (err) {
-      console.error('Failed to fetch products');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
+const ProductList: React.FC<ProductListProps> = ({
+  products,
+  visibleCount,
+  onUpvote,
+  onSave,
+  onSeeMore,
+}) => {
   return (
     <div className="space-y-4">
-      {loading
+      {products.length === 0
         ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={idx} />)
-        : products.map(product => (
-            <ProductCard key={product.id} product={product} refreshProducts={fetchProducts} />
+        : products.slice(0, visibleCount).map((product) => (
+            <ProductCard key={product.id} product={product} onUpvote={onUpvote} onSave={onSave} />
           ))}
+      {products.length > visibleCount && (
+        <div className="text-center mt-4">
+          <button
+            onClick={onSeeMore}
+            className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] px-6 py-2 rounded-full text-white"
+          >
+            See More
+          </button>
+        </div>
+      )}
     </div>
   );
 };
