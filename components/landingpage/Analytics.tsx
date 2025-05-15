@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
       
 
         {/* Analytics Panel */}
-        <div className="w-full bg-zinc-900 rounded-2xl p-6 shadow-lg space-y-6">
+        <div className="w-full bg-[#171717] rounded-2xl p-6 shadow-lg space-y-6">
           <div className="text-xl font-semibold text-white flex items-center gap-2">
             <FiBarChart2 className="text-[#0096FF]" />
             Launch Analytics
@@ -47,7 +47,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
   return (
-    <div className="bg-zinc-800 p-4 rounded-xl flex items-center gap-4 shadow-inner">
+    <div className="bg-[#282828] p-4 rounded-xl flex items-center gap-4 shadow-inner">
       <div className="text-[#0096FF] text-xl">{icon}</div>
       <div>
         <div className="text-lg font-bold">{value}</div>
