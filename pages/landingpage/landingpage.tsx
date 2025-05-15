@@ -18,35 +18,27 @@ const LandingPage: React.FC = () => {
   const [welcomeModal, setWelcomeModal] = useState(false);
 
   useEffect(() => {
-    // Fetch products from the backend
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch('https://launchhunt.up.railway.app/products');
-        const data = await res.json();
-        // Ensure every product has a boolean 'saved' property
-        setProducts(
-          data.map((product: any) => ({
-            ...product,
-            id: typeof product.id === 'string' ? product.id : String(product.id),
-            saved: typeof product.saved === 'boolean' ? product.saved : false,
-          }))
-        );
-      } catch (err) {
-        console.error('Failed to fetch products:', err);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('https://launchhunt.up.railway.app/products');
+      const data = await res.json();
 
-    fetchProducts();
+      const mappedProducts = data.map((product: any) => ({
+        ...product,
+        id: typeof product.id === 'string' ? product.id : String(product.id),
+        saved: typeof product.saved === 'boolean' ? product.saved : false,
+      }));
 
-    // Welcome modal logic
-    if (typeof window !== 'undefined') {
-      const shouldShow = localStorage.getItem('showWelcomeModal');
-      if (shouldShow === 'true') {
-        setWelcomeModal(true);
-        localStorage.removeItem('showWelcomeModal');
-      }
+      setProducts(mappedProducts);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
     }
-  }, []);
+  };
+
+  fetchProducts();
+}, []);
+
+
 
   const handleSeeMore = (): void => {
     setVisibleCount((prev) => prev + 5);
@@ -85,15 +77,11 @@ const LandingPage: React.FC = () => {
         />
       </div>
 
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        products={products}
-      />
+      {/* Modal */}     
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} products={products.length > 0 ? products : []} />
 
       {/* Main Section */}
-      <section className="p-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="p-6 max-w-7xl mx-auto flex flex-col md:flex-row justify-between md:pt-28">
         <ProductList
           products={products}
           visibleCount={visibleCount}
@@ -101,7 +89,9 @@ const LandingPage: React.FC = () => {
           onSave={handleSave}
           onSeeMore={handleSeeMore}
         />
+        <div className="mt-20 md:mt-0">
         <Sidebar onOpenModal={() => setIsModalOpen(true)} />
+        </div>
       </section>
 
       {/* What is LaunchHunt */}
