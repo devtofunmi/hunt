@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
+import LoadingSpinner from '@/components/landingpage/LoadingSpinner';
 
 type Product = {
   id: number;
@@ -60,7 +61,7 @@ const ProductsPage: React.FC = () => {
   if (authLoading || loadingProducts) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center">
-        <p className="text-center text-gray-400">Loading...</p>
+        <LoadingSpinner />
       </div>
     );
   }

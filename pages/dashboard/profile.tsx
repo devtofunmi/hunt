@@ -12,6 +12,7 @@ import { SiBluesky } from 'react-icons/si';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Product } from '@/types';
+import LoadingSpinner from '@/components/landingpage/LoadingSpinner';
 
 const Profile: React.FC = () => {
   const { user, loading, accessToken } = useAuth();
@@ -89,7 +90,9 @@ const Profile: React.FC = () => {
   };
 
   if (loading || !user) {
-    return <div className="h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center">
+            <LoadingSpinner />
+          </div>;
   }
 
   return (
