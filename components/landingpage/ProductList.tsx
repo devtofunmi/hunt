@@ -2,10 +2,10 @@
 import React from 'react';
 import ProductCard from './ProductCard';
 import { Product } from '@/types';
-import SkeletonCard from './SkeletonCard';
+import LoadingSpinner from './LoadingSpinner';
 
 interface ProductListProps {
-  products: Product[]; // Make sure the products are passed as props to this component
+  products: Product[];
   visibleCount: number;
   onUpvote: (id: number) => void;
   onSave: (id: number) => void;
@@ -21,11 +21,16 @@ const ProductList: React.FC<ProductListProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      {products.length === 0
-        ? Array.from({ length: 5 }).map((_, idx) => <SkeletonCard key={idx} />)
-        : products.slice(0, visibleCount).map((product) => (
-            <ProductCard key={product.id} product={product} onUpvote={onUpvote} onSave={onSave} />
-          ))}
+      {products.length === 0 ? (
+        <div className="flex justify-center items-center w-full lg:w-[700px] h-40">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        products.slice(0, visibleCount).map((product) => (
+          <ProductCard key={product.id} product={product} onUpvote={onUpvote} onSave={onSave} />
+        ))
+      )}
+
       {products.length > visibleCount && (
         <div className="text-center mt-4">
           <button
