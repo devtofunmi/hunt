@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
     if (!isLoggedIn) return redirectToLogin();
 
     try {
-      const res = await fetch(`https://prettybio.up.railway.app/products/${product.id}/upvote`, {
+      const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/upvote`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -65,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
     if (!isLoggedIn) return redirectToLogin();
 
     try {
-      const res = await fetch(`https://prettybio.up.railway.app/products/${product.id}/save`, {
+      const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/save`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -84,7 +84,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
   return (
     <>
       <div
-        className="group flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative"
+        className="group w-full lg:w-[700px] flex hover:bg-[#262629] cursor-pointer justify-between items-center border border-[#27272a] p-2 md:p-4 rounded-xl hover:shadow-md transition relative"
         onClick={() => setIsModalOpen(true)}
       >
         <div className="flex items-center gap-4">
@@ -109,14 +109,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
         <div className="flex flex-col items-center gap-4">
           <button
             onClick={handleUpvote}
-            className="flex flex-col items-center text-gray-400 hover:text-[#6E00FF] transition"
+            className="flex flex-col cursor-pointer  items-center text-gray-400 hover:text-[#6E00FF] transition"
           >
             <IoIosArrowDropup size={20} />
             <span className="text-xs">{upvotes}</span>
           </button>
           <button
             onClick={handleSave}
-            className="text-gray-400 hover:text-[#0096FF] transition"
+            className="text-gray-400  cursor-pointer hover:text-[#0096FF] transition"
           >
             <FiBookmark size={20} fill={saved ? '#0096FF' : 'none'} />
           </button>
