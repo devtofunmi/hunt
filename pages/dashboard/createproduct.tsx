@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/landingpage/Navbar';
 import Footer from '@/components/landingpage/Footer';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoClose, IoEyeOutline } from 'react-icons/io5';
+import { useAuth } from '@/context/AuthContext';
 
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/drirsnp0c/image/upload';
 const CLOUDINARY_PRESET = 'users_avater';
@@ -44,9 +45,6 @@ const CreateProduct = () => {
 
   const [logo, setLogo] = useState<string>('');
   const [logoName, setLogoName] = useState<string>('');
-  const [ownToggle, setOwnToggle] = useState(false);
-  const togglePreview = () => setOwnToggle(prev => !prev);
-
   const [form, setForm] = useState({
     title: '',
     shortDescription: '',
@@ -85,43 +83,64 @@ const CreateProduct = () => {
     return null;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { user } = useAuth();
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const error = validate();
-    if (error) {
-      toast.error(error);
+    if (!user) {
+      toast.error('You must be logged in to create a product.');
       return;
     }
 
-    setLoading(true);
+    const validationError = validate();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    const productData = {
+      title: form.title,
+      fullDescription: form.fullDescription,
+      shortDescription: form.shortDescription,
+      logo: logo,
+      tags: form.tags.split(',').map(tag => tag.trim()),
+      upvotes: 0,
+      githubUrl: form.githubUrl,
+      link: form.link,
+      user: {
+        id: user.id,
+        name: user.name,
+        image: user.image || '',
+        bio: user.username || '',
+        socialLinks: [
+          ...(user.github ? [{ platform: 'GitHub', url: user.github }] : []),
+          ...(user.twitter ? [{ platform: 'Twitter', url: user.twitter }] : []),
+          ...(user.linkedin ? [{ platform: 'LinkedIn', url: user.linkedin }] : []),
+          ...(user.bluesky ? [{ platform: 'Bluesky', url: user.bluesky }] : []),
+        ],
+      },
+    };
 
     try {
+      setLoading(true);
+
       const res = await fetch('https://launchhunt.up.railway.app/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
-        body: JSON.stringify({
-          ...form,
-          logo,
-          tags: form.tags
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean),
-        }),
+        body: JSON.stringify(productData),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Something went wrong');
-      }
+      if (!res.ok) throw new Error('Failed to submit product');
 
-      toast.success('🎉 Product submitted successfully!');
-      setTimeout(() => router.push('/'), 1500);
-    } catch (err: any) {
-      toast.error(err.message);
+      toast.success('Product submitted!');
+      router.push('/');
+    } catch (err) {
+      toast.error('Failed to create product');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -145,39 +164,37 @@ const CreateProduct = () => {
                 <li>Write a clear, concise short description</li>
                 <li>Add useful links (live, GitHub)</li>
               </ul>
-              
             </section>
+
             <div className="mx-auto bg-[#1a1a1a] rounded-md p-4 hidden md:block max-h-[80vh] overflow-y-auto">
-                  <div className="flex justify-between items-center">
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {logo && (
-                      <img
-                        src={logo}
-                        alt="logo"
-                        className="md:w-15 md:h-15 h-10 w-10 rounded-md object-cover"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-semibold text-[15px]">{form.title}</h3>
-                      <p className="text-[12px] text-gray-400 mt-0 md:mt-1">{form.shortDescription}</p>
-                      <div className="flex flex-wrap gap-2 mt-2 transition-opacity">
-                        {form.tags
-                          .split(',')
-                          .map((tag) => tag.trim())
-                          .filter(Boolean)
-                          .map((tag, index) => (
-                            <span
-                              key={index}
-                              className="bg-gray-100 text-gray-700 text-xs px-2 rounded-md"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
+              <div className="flex items-center gap-4">
+                {logo && (
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="md:w-15 md:h-15 h-10 w-10 rounded-md object-cover"
+                  />
+                )}
+                <div>
+                  <h3 className="font-semibold text-[15px]">{form.title}</h3>
+                  <p className="text-[12px] text-gray-400 mt-0 md:mt-1">{form.shortDescription}</p>
+                  <div className="flex flex-wrap gap-2 mt-2 transition-opacity">
+                    {form.tags
+                      .split(',')
+                      .map(tag => tag.trim())
+                      .filter(Boolean)
+                      .map((tag, index) => (
+                        <span
+                          key={index}
+                          className="bg-gray-100 text-gray-700 text-xs px-2 rounded-md"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                   </div>
                 </div>
+              </div>
+            </div>
 
             <button
               onClick={() => setIsPreviewOpen(true)}
@@ -208,7 +225,7 @@ const CreateProduct = () => {
                       <div className="flex flex-wrap gap-2 mt-2 transition-opacity">
                         {form.tags
                           .split(',')
-                          .map((tag) => tag.trim())
+                          .map(tag => tag.trim())
                           .filter(Boolean)
                           .map((tag, index) => (
                             <span
@@ -266,48 +283,49 @@ const CreateProduct = () => {
                 value={form.shortDescription}
                 onChange={handleChange}
                 required
+                rows={3}
                 className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Full Description (optional)</label>
+              <label className="block text-sm font-medium mb-1">Full Description</label>
               <textarea
                 name="fullDescription"
                 value={form.fullDescription}
                 onChange={handleChange}
+                rows={5}
                 className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
               />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-1">Live URL</label>
-                <input
-                  name="link"
-                  value={form.link}
-                  onChange={handleChange}
-                  className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">GitHub URL</label>
-                <input
-                  name="githubUrl"
-                  value={form.githubUrl}
-                  onChange={handleChange}
-                  className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Live Link</label>
+              <input
+                name="link"
+                value={form.link}
+                onChange={handleChange}
+                className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Tags (comma-separated)</label>
+              <label className="block text-sm font-medium mb-1">GitHub URL</label>
+              <input
+                name="githubUrl"
+                value={form.githubUrl}
+                onChange={handleChange}
+                className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Tags (comma separated)</label>
               <input
                 name="tags"
                 value={form.tags}
                 onChange={handleChange}
-                placeholder="react, nextjs, design"
+                placeholder="e.g., open-source, ai, productivity"
                 className="w-full bg-[#1f1f1f] p-3 rounded border focus:border-[#6E00FF] outline-none"
               />
             </div>
@@ -315,7 +333,7 @@ const CreateProduct = () => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] cursor-pointer w-full transition text-white py-3 px-6 rounded font-semibold disabled:opacity-50"
+              className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] w-full cursor-pointer hover:bg-[#5a00cc] transition-colors px-6 py-3 rounded font-semibold"
             >
               {loading ? 'Submitting...' : 'Submit Product'}
             </button>
