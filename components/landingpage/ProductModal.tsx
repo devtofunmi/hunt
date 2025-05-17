@@ -1,16 +1,35 @@
 'use client';
 
 import React from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiExternalLink } from 'react-icons/fi';
+import { FaGithub } from 'react-icons/fa';
+
+type SocialLink = {
+  platform: string;
+  url: string;
+};
+
+type User = {
+  id: string;
+  name: string;
+  image: string;
+  bio: string;
+  socialLinks: SocialLink[];
+};
 
 type Product = {
   id: string;
-  name: string;
-  description: string;
-  tags: string[];
+  title: string;
+  fullDescription: string;
+  shortDescription: string;
   logo: string;
+  tags: string[];
   upvotes: number;
   saved?: boolean;
+  githubUrl?: string;
+  link?: string;
+  createdAt: string;
+  user: User;
 };
 
 type ProductModalProps = {
@@ -21,37 +40,112 @@ type ProductModalProps = {
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   if (!product) return null;
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50">
-      <div className="bg-[#18181b] text-white p-6 rounded-lg w-11/12 max-w-md relative">
+    <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50 overflow-y-auto">
+      <div className="bg-[#18181b] text-white p-6 rounded-lg w-11/12 max-w-xl relative shadow-xl">
         <button
           onClick={onClose}
           className="absolute cursor-pointer top-4 right-4 text-white hover:text-gray-400"
         >
           <FiX size={24} />
         </button>
-        <div className="flex flex-col items-center gap-4">
-          <img
-            src={product.logo}
-            alt={product.name}
-            className="w-16 h-16 rounded-md object-cover"
-          />
-          <h2 className="text-xl font-bold">{product.name}</h2>
-          <p className="text-gray-400 text-center">{product.description}</p>
+
+        <div className="flex flex-col gap-4">
+          {/* Product Header */}
+          <div className="flex items-center gap-4">
+            <img
+              src={product.logo}
+              alt={product.title}
+              className="w-16 h-16 rounded-md object-cover"
+            />
+            <div>
+              <h2 className="text-2xl font-bold">{product.title}</h2>
+              <p className="text-sm text-gray-400">Published on {formatDate(product.createdAt)}</p>
+            </div>
+          </div>
+
+          {/* Product Description */}
+          <p className="text-gray-300">{product.fullDescription}</p>
+
+          {/* Tags */}
           <div className="flex flex-wrap gap-2 mt-2">
-            {product.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="text-xs bg-gray-700 px-2 py-1 rounded-full"
-              >
+            {product.tags.map((tag, i) => (
+              <span key={i} className="text-xs bg-gray-700 px-2 py-1 rounded-full">
                 {tag}
               </span>
             ))}
           </div>
+
+          {/* Links */}
           <div className="flex gap-4 mt-4">
-            <span>🔥 {product.upvotes}</span>
-            <span>{product.saved ?? false ? '💾 Saved' : '📦 Not Saved'}</span>
+            {product.link && (
+              <a
+                href={product.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-sm text-blue-400 hover:underline"
+              >
+                <FiExternalLink /> Live Site
+              </a>
+            )}
+            {product.githubUrl && (
+              <a
+                href={product.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-sm text-blue-400 hover:underline"
+              >
+                <FaGithub /> GitHub
+              </a>
+            )}
           </div>
+
+          {/* Stats */}
+          <div className="flex gap-6 mt-4 text-sm text-gray-400">
+            <span>🔥 {product.upvotes} upvotes</span>
+            <span>{product.saved ? '💾 Saved' : '📦 Not Saved'}</span>
+          </div>
+
+          {/* Divider */}
+          <hr className="border-gray-700 my-4" />
+
+          {/* User Info */}
+          {product.user && (
+  <div className="flex items-center gap-4">
+    <img
+      src={product.user.image}
+      alt={product.user.name}
+      className="w-12 h-12 rounded-full object-cover"
+    />
+    <div>
+      <h3 className="font-semibold">{product.user.name}</h3>
+      <p className="text-sm text-gray-400">{product.user.bio}</p>
+      <div className="flex flex-wrap gap-2 mt-1">
+        {product.user.socialLinks?.map((link, i) => (
+          <a
+            key={i}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-400 hover:underline"
+          >
+            {link.platform}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </div>
@@ -59,4 +153,3 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
 };
 
 export default ProductModal;
-
