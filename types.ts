@@ -14,4 +14,23 @@ export type Product = {
   upvotes: number;
   createdAt: string;
   saved?: boolean;
+  user: User;
+
+};
+
+type SocialLink = {
+  platform: string;
+  url: string;
+};
+
+type User = {
+  twitter: string;
+  github: string;
+  linkedin: string;
+  bluesky: string;
+  id: string;
+  username: string;
+  image: string;
+  bio: string;
+  socialLinks: SocialLink[];
 };

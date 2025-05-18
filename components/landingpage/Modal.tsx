@@ -6,38 +6,10 @@ import { FiExternalLink } from 'react-icons/fi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { SiBluesky } from 'react-icons/si';
+import { Product } from '@/types';
 
-type SocialLink = {
-  platform: string;
-  url: string;
-};
 
-type User = {
-  twitter: string;
-  github: string;
-  linkedin: string;
-  bluesky: string;
-  id: string;
-  username: string;
-  image: string;
-  bio: string;
-  socialLinks: SocialLink[];
-};
 
-export type Product = {
-  id: string;
-  title: string;
-  fullDescription: string;
-  shortDescription: string;
-  logo: string;
-  tags: string[];
-  upvotes: number;
-  saved?: boolean;
-  githubUrl?: string;
-  link?: string;
-  createdAt: string;
-  user: User;
-};
 
 type ModalProps = {
   isOpen: boolean;
