@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { FiX, FiExternalLink } from 'react-icons/fi';
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
+import { SiBluesky } from 'react-icons/si';
 
 type SocialLink = {
   platform: string;
@@ -10,8 +12,12 @@ type SocialLink = {
 };
 
 type User = {
+  twitter: string;
+  github: string;
+  linkedin: string;
+  bluesky: string;
   id: string;
-  name: string;
+  username: string;
   image: string;
   bio: string;
   socialLinks: SocialLink[];
@@ -55,6 +61,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
         <button
           onClick={onClose}
           className="absolute cursor-pointer top-4 right-4 text-white hover:text-gray-400"
+          aria-label="Close modal"
         >
           <FiX size={24} />
         </button>
@@ -120,32 +127,62 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
 
           {/* User Info */}
           {product.user && (
-  <div className="flex items-center gap-4">
-    <img
-      src={product.user.image}
-      alt={product.user.name}
-      className="w-12 h-12 rounded-full object-cover"
-    />
-    <div>
-      <h3 className="font-semibold">{product.user.name}</h3>
-      <p className="text-sm text-gray-400">{product.user.bio}</p>
-      <div className="flex flex-wrap gap-2 mt-1">
-        {product.user.socialLinks?.map((link, i) => (
-          <a
-            key={i}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-400 hover:underline"
-          >
-            {link.platform}
-          </a>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
-
+            <div className="flex items-center gap-4">
+              <img
+                src={product.user.image}
+                alt={product.user.username}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <div className="flex justify-between w-full ">
+                <div>
+                  <h3 className="font-semibold">{product.user.username}</h3>
+                  <p className="text-sm text-gray-400">{product.user.bio}</p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  {product.user.twitter && (
+                    <a
+                      href={product.user.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Twitter"
+                    >
+                      <FaXTwitter size={15} className="text-blue-400" />
+                    </a>
+                  )}
+                  {product.user.github && (
+                    <a
+                      href={product.user.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="GitHub"
+                    >
+                      <FaGithub size={15} className="text-blue-400" />
+                    </a>
+                  )}
+                  {product.user.linkedin && (
+                    <a
+                      href={product.user.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="LinkedIn"
+                    >
+                      <FaLinkedin size={15} className="text-blue-400" />
+                    </a>
+                  )}
+                  {product.user.bluesky && (
+                    <a
+                      href={product.user.bluesky}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Bluesky"
+                    >
+                      <SiBluesky size={15} className="text-blue-400" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
