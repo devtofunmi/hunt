@@ -113,12 +113,11 @@ const CreateProduct = () => {
         name: user.name,
         image: user.image || '',
         bio: user.username || '',
-        socialLinks: [
-          ...(user.github ? [{ platform: 'GitHub', url: user.github }] : []),
-          ...(user.twitter ? [{ platform: 'Twitter', url: user.twitter }] : []),
-          ...(user.linkedin ? [{ platform: 'LinkedIn', url: user.linkedin }] : []),
-          ...(user.bluesky ? [{ platform: 'Bluesky', url: user.bluesky }] : []),
-        ],
+        github: user.github || '',
+        twitter: user.twitter || '',
+        linkedin: user.linkedin || '',
+        bluesky: user.bluesky || '',
+       
       },
     };
 
