@@ -15,10 +15,10 @@ import LoadingSpinner from '@/components/landingpage/LoadingSpinner';
 type Product = {
   id: number;
   title: string;
-  logoUrl: string;
+  logo: string;
   shortDescription: string;
   fullDescription?: string;
-  liveUrl?: string;
+  link?: string;
   githubUrl?: string;
   tags: string[];
 };
@@ -83,29 +83,35 @@ const ProductsPage: React.FC = () => {
           </div>
 
           {products.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <div key={product.id} className="bg-[#1f1f1f] p-5 rounded-lg shadow">
-                  <img
-                    src={product.logoUrl}
-                    alt={product.title}
-                    className="w-12 h-12 mb-4 rounded"
-                  />
-                  <h3 className="text-lg font-medium mb-2">{product.title}</h3>
-                  <p className="text-gray-400 text-sm mb-2">{product.shortDescription}</p>
-                  {product.liveUrl && (
-                    <a
-                      href={product.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#6E00FF] text-sm hover:underline"
-                    >
-                      Visit Site →
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
+             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+    <div
+      key={product.id}
+      className="bg-[#1f1f1f] p-5 rounded-lg shadow flex flex-col"
+    >
+      <img
+        src={product.logo}
+        alt={product.title}
+        className="w-12 h-12 mb-4 rounded"
+      />
+      <h3 className="text-lg font-medium mb-2">{product.title}</h3>
+      <p className="text-gray-400 text-sm mb-2">{product.shortDescription}</p>
+
+      {/* Push this link to the bottom of the flex column */}
+      {product.link && (
+        <a
+          href={product.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#6E00FF] text-sm mt-auto hover:underline"
+        >
+          Visit Site →
+        </a>
+      )}
+    </div>
+            ))}
+          </div>
+
           ) : (
             <div className="flex flex-col justify-center items-center min-h-[50vh] text-center">
               <h1 className="md:text-2xl text-xl font-semibold mb-4">
