@@ -13,9 +13,7 @@ interface Stats {
   totalUpvotes: number;
   featuredProducts: number;
 }
-interface Views {
-  totalViews: number;
-}
+
 
 const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
   const [stats, setStats] = useState<Stats>({
@@ -23,9 +21,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
     totalViews: 0,
     totalUpvotes: 0,
     featuredProducts: 0,
-  });
-  const [views, setViews] = useState<Views>({
-    totalViews: 0,
   });
 
   useEffect(() => {
