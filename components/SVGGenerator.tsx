@@ -87,19 +87,20 @@ const SVGBackgroundGenerator: React.FC = () => {
       {/* Controls */}
       <div className="flex flex-col gap-4 w-full md:w-1/3">
         <label className="font-semibold">Background Type</label>
-        <select
-          value={background}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-            setBackground(e.target.value as BackgroundType)
-          }
-          className="p-2 border border-gray-300 rounded"
-        >
-          <option value="blob">Blob Mesh</option>
-          <option value="wave">Wave</option>
-          <option value="hills">Layered Hills</option>
-          <option value="radial">Radial Glow</option>
-          <option value="slanted">Slanted Divider</option>
-        </select>
+         <select
+           value={background}
+           onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+             setBackground(e.target.value as BackgroundType)
+           }
+         className="p-2 bg-[#1f1f1f] text-white border border-gray-300 rounded appearance-none focus:outline-none focus:ring-2 focus:ring-[#0096FF]"
+       >
+         <option className="bg-[#1f1f1f] text-white" value="blob">Blob Mesh</option>
+         <option className="bg-[#1f1f1f] text-white" value="wave">Wave</option>
+         <option className="bg-[#1f1f1f] text-white" value="hills">Layered Hills</option>
+         <option className="bg-[#1f1f1f] text-white" value="radial">Radial Glow</option>
+         <option className="bg-[#1f1f1f] text-white" value="slanted">Slanted Divider</option>
+     </select>
+
 
         <div>
           <label className="font-semibold">Primary Color</label>
