@@ -1,25 +1,70 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiBarChart2, FiEye, FiThumbsUp, FiStar } from 'react-icons/fi';
 
 interface SidebarProps {
   onOpenModal: () => void;
 }
 
-const mockStats = {
-  totalProducts: 128,
-  totalViews: 3045,
-  totalUpvotes: 789,
-  featuredProducts: 12,
-};
+interface Stats {
+  totalProducts: number;
+  totalViews: number;
+  totalUpvotes: number;
+  featuredProducts: number;
+}
+interface Views {
+  totalViews: number;
+}
 
 const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
+  const [stats, setStats] = useState<Stats>({
+    totalProducts: 0,
+    totalViews: 0,
+    totalUpvotes: 0,
+    featuredProducts: 0,
+  });
+  const [views, setViews] = useState<Views>({
+    totalViews: 0,
+  });
+
+  useEffect(() => {
+  const trackHomepageView = async () => {
+    try {
+      const res = await fetch('https://launchhunt.up.railway.app/analytics/view/homepage', {
+        method: 'POST',
+      });
+      if (!res.ok) throw new Error('Failed to track homepage view');
+    } catch (error) {
+      console.error('Error tracking homepage view:', error);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('https://launchhunt.up.railway.app/analytics');
+      if (!res.ok) throw new Error('Failed to fetch analytics');
+      const data = await res.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const trackAndUpdate = async () => {
+    await trackHomepageView(); // increment view on server
+    await fetchStats();        // get updated stats after increment
+  };
+
+  trackAndUpdate();
+}, []);
+
+
+
+
   return (
     <aside>
       <div className="sticky top-24 md:w-[400px] flex flex-col gap-8">
-      
-
         {/* Analytics Panel */}
         <div className="w-full bg-[#171717] rounded-2xl p-6 shadow-lg space-y-6">
           <div className="text-xl font-semibold text-white flex items-center gap-2">
@@ -28,10 +73,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-white">
-            <StatCard label="Products" value={mockStats.totalProducts} icon={<FiBarChart2 />} />
-            <StatCard label="Views" value={mockStats.totalViews} icon={<FiEye />} />
-            <StatCard label="Upvotes" value={mockStats.totalUpvotes} icon={<FiThumbsUp />} />
-            <StatCard label="Featured" value={mockStats.featuredProducts} icon={<FiStar />} />
+            <StatCard label="Products" value={stats.totalProducts} icon={<FiBarChart2 />} />
+            <StatCard label="Views" value={stats.totalViews} icon={<FiEye />} />
+            <StatCard label="Upvotes" value={stats.totalUpvotes} icon={<FiThumbsUp />} />
+            <StatCard label="Featured" value={stats.featuredProducts} icon={<FiStar />} />
           </div>
         </div>
       </div>
