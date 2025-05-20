@@ -119,7 +119,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
           {/* Stats */}
           <div className="flex gap-6 mt-4 text-sm text-gray-400">
             <span>🔥 {product.upvotes} upvotes</span>
-            <span>{product.saved ? '💾 Saved' : '📦 Not Saved'}</span>
+            {/* <span>{product.saved ? '💾 Saved' : '📦 Not Saved'}</span> */}
           </div>
 
           {/* Divider */}
