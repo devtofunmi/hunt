@@ -132,7 +132,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
                 <img
                   src={product.user.image}
                   alt={product.user.username}
-                  className="w-10 h-10 rounded-md object-cover"
+                  className="w-11 h-10 rounded-full object-cover"
                 />
               
               <div className="flex justify-between w-full ">
