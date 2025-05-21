@@ -33,7 +33,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ dropdownOpen, toggleDropdow
   return (
     <div className="relative">
       <button className="flex cursor-pointer items-center gap-2 text-white" onClick={toggleDropdown}>
-        <Image src={user?.image || DEFAULT_IMAGE} alt="User" width={32} height={32} className="rounded-full" />
+        <img src={user?.image || DEFAULT_IMAGE} alt="User"  className="rounded-full w-10 h-10 object-cover" />
         <span>{user?.username?.split(' ')[0] || 'Guest'}</span>
         {dropdownOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
       </button>
