@@ -128,7 +128,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
           {/* User Info */}
           {product.user && (
             <div className="flex items-center gap-4">
-              <div className="w-12 h-11 rounded-full">
+              <div className="w-10 h-10 rounded-full">
                 <img
                   src={product.user.image}
                   alt={product.user.username}
