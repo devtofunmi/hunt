@@ -113,13 +113,20 @@ const LandingPage: React.FC = () => {
     mainRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const fadeUp = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 },
+  viewport: { once: false },
+};
+
   return (
     <main className="min-h-screen bg-[#171717] text-white relative">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-46 px-2 text-center">
-        <div className="max-w-4xl mx-auto">
+       <motion.section className="pt-46 px-2 text-center" {...fadeUp}>
+         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
             Find what others built. Create something better.
           </h1>
@@ -133,7 +140,7 @@ const LandingPage: React.FC = () => {
             Explore Projects
           </button>
         </div>
-      </section>
+        </motion.section>
 
       {/* Mobile Search Input */}
       <div className="w-full mt-20 px-6 md:hidden">
@@ -148,10 +155,11 @@ const LandingPage: React.FC = () => {
       {/* Modal */}     
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} products={products.length > 0 ? products : []} />
 
-      {/* Main Section */}
-      <section
+       {/* Main Section */}
+      <motion.section
         ref={mainRef}
         className="p-6 max-w-7xl mx-auto flex flex-col md:flex-row justify-between md:pt-28"
+        {...fadeUp}
       >
         <ProductList
           products={products}
@@ -161,22 +169,22 @@ const LandingPage: React.FC = () => {
           onSeeMore={handleSeeMore}
         />
         <div className="mt-20 md:mt-0">
-           <Sidebar onOpenModal={() => setIsModalOpen(true)} />
+          <Sidebar onOpenModal={() => setIsModalOpen(true)} />
         </div>
-      </section>
+      </motion.section>
 
       {/* What is LaunchHunt */}
-      <section id="what" className="py-24 w-full text-center">
+      <motion.section id="what" className="py-24 text-center" {...fadeUp}>
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">What is LaunchHunt?</h2>
           <p className="text-lg md:text-xl text-gray-300">
             LaunchHunt empowers indie developers by showcasing real-world projects similar to yours. Gain practical insights, validate your ideas, and build confidently using proven examples.
           </p>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Features */}
-      <section id="features" className="py-20">
+     {/* Features */}
+      <motion.section id="features" className="py-20" {...fadeUp}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -197,26 +205,27 @@ const LandingPage: React.FC = () => {
                 description: 'Study, plan, and launch with more clarity and less guesswork.',
                 isGradient: true,
               },
-            ].map(({ title, description, isGradient }, index) => (
-              <div
-                key={index}
+            ].map(({ title, description, isGradient }, i) => (
+              <motion.div
+                key={i}
                 className={`p-8 rounded-3xl shadow-lg hover:shadow-2xl transition ${
                   isGradient ? 'bg-gradient-to-r from-[#6E00FF] to-[#0096FF]' : 'bg-[#1f1f21]'
                 }`}
+                {...fadeUp}
               >
                 <h3 className="text-2xl font-semibold mb-4">{title}</h3>
                 <p className="text-gray-300">{description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
+
 
       {/* Testimonials */}
-      <section className="py-18 bg-[#1f1f21]">
+      <motion.section className="py-18 bg-[#1f1f21]" {...fadeUp}>
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-12">What people are saying</h2>
-
           <div className="relative h-40 overflow-hidden max-w-3xl mx-auto">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -234,10 +243,9 @@ const LandingPage: React.FC = () => {
             </AnimatePresence>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Success Stories */}
-      <section className="py-20 text-center bg-[#171717] border-t border-gray-800">
+      <motion.section className="py-20 text-center bg-[#171717] border-t border-gray-800" {...fadeUp}>
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Success Stories</h2>
           <p className="text-lg text-gray-400 mb-12">
@@ -246,23 +254,19 @@ const LandingPage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-8 text-left">
             <div className="bg-[#1f1f21] p-6 rounded-xl border border-gray-700">
               <h4 className="font-semibold text-xl mb-2">Pivoted to Profit</h4>
-              <p className="text-gray-400">
-                “We avoided building the wrong thing by analyzing products on LaunchHunt. Now we’re at $2k MRR.”
-              </p>
+              <p className="text-gray-400">“We avoided building the wrong thing by analyzing products on LaunchHunt. Now we’re at $2k MRR.”</p>
             </div>
             <div className="bg-[#1f1f21] p-6 rounded-xl border border-gray-700">
-              <h4 className="font-semibold text-xl mb-2">Idea to MVP in 10 Days</h4>
-              <p className="text-gray-400">
-                “I got inspired by 3 projects and merged ideas. Users loved the unique combo. Thanks LH!”
-              </p>
+              <h4 className="font-semibold text-xl mb-2">Design Confidence</h4>
+              <p className="text-gray-400">“The UI patterns we copied from LaunchHunt’s library got great user feedback. Our churn dropped by 20%.”</p>
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* SVG Generator CTA */}
-      <section className="py-20 bg-[#1f1f21] text-center">
-        <div className="max-w-4xl mx-auto px-6">
+       <motion.section className="py-20 bg-[#1f1f21] text-center" {...fadeUp}>
+         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Wanna create cool SVG backgrounds for your landing page?
           </h2>
@@ -276,7 +280,8 @@ const LandingPage: React.FC = () => {
             Open SVG Generator
           </button>
         </div>
-      </section>
+       </motion.section>
+      
 
       {/* Modals */}
        <SVGGeneratorModal
