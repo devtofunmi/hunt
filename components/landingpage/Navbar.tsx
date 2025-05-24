@@ -112,10 +112,10 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="bg-white/10 backdrop-blur-md border-b border-white/20 py-4 px-3 md:px-6 shadow-md w-full fixed top-0 left-0 z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="max-w-7xl mx-auto flex justify-between text-center items-center">
         {/* Logo */}
         <div
-          className="md:text-xl text-lg font-bold text-white cursor-pointer"
+          className="md:text-xl text-lg font-bold text-white text-center cursor-pointer"
           onClick={() => router.push('/')}
         >
           LaunchHunt
