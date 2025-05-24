@@ -9,6 +9,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  bio:  String;
   image?: string;
   username?: string;
 }
