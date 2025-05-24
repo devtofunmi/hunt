@@ -115,7 +115,7 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="flex items-center justify-between w-full max-w-3xl mt-24 gap-4">
-          <h1 className="text-xl font-semibold">{user.name}</h1>
+          <h1 className="text-xl font-semibold">{user.username}</h1>
           <Link href="/dashboard/settings">
             <button className="flex items-center cursor-pointer gap-2 rounded-md bg-gradient-to-r from-[#6E00FF] to-[#0096FF] px-2 md:px-4 py-2 text-white">
               <FiSettings />
@@ -125,7 +125,7 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="w-full max-w-3xl mt-8">
-          <p className="text-md text-gray-400">{user.username || 'No username'}</p>
+          <p className="text-md text-gray-400">{user.bio || 'No username'}</p>
           <p className="text-md text-gray-400 mt-2">{user.email}</p>
           <div className="mt-4 flex flex-wrap gap-4">
             {user.twitter && <a href={user.twitter}><FaXTwitter size={25} className="text-blue-400" /></a>}
