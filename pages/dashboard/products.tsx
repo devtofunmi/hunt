@@ -74,12 +74,12 @@ const ProductsPage: React.FC = () => {
         <div className="max-w-5xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-semibold">Your Products</h2>
-            <Link href="/dashboard/createproduct">
+            {/* <Link href="/dashboard/createproduct">
               <button className="flex items-center cursor-pointer gap-2 bg-gradient-to-r from-[#6E00FF] to-[#0096FF] text-white px-2 md:px-4 py-2 rounded-md">
                 <FiPlus className="hidden md:block" />
                 Create New Product
               </button>
-            </Link>
+            </Link> */}
           </div>
 
           {products.length > 0 ? (
