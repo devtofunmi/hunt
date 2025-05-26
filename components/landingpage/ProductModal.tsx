@@ -1,10 +1,30 @@
 'use client';
 
-import React from 'react';
-import { FiX, FiExternalLink } from 'react-icons/fi';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import {
+  FiX,
+  FiExternalLink,
+} from 'react-icons/fi';
+import {
+  FaGithub,
+  FaLinkedin,
+} from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { SiBluesky } from 'react-icons/si';
+
+import axios from 'axios';
+import { useAuth } from '@/context/AuthContext';
+
+type Comment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: {
+    id: string;
+    username: string;
+    image: string;
+  };
+};
 
 type SocialLink = {
   platform: string;
@@ -44,6 +64,11 @@ type ProductModalProps = {
 };
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
+    const { accessToken, user } = useAuth();
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [loading, setLoading] = useState(false);
+
   if (!product) return null;
 
   const formatDate = (dateStr: string) => {
@@ -55,139 +80,199 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     });
   };
 
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get(`https://launchhunt.up.railway.app/comments/${product.id}`);
+      setComments(res.data as Comment[]);
+    } catch (err) {
+      console.error('Error fetching comments:', err);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!newComment.trim()) return;
+    setLoading(true);
+
+    try {
+      await axios.post(
+        'https://launchhunt.up.railway.app/comments',
+        {
+          content: newComment,
+          productId: product.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setNewComment('');
+      fetchComments();
+    } catch (err) {
+      console.error('Failed to post comment:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (product?.id) {
+      fetchComments();
+    }
+  }, [product?.id]);
+
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50 overflow-y-auto">
-      <div className="bg-[#18181b] text-white p-6 rounded-lg w-11/12 max-w-xl relative shadow-xl">
-        <button
-          onClick={onClose}
-          className="absolute cursor-pointer top-4 right-4 text-white hover:text-gray-400"
-          aria-label="Close modal"
-        >
-          <FiX size={24} />
-        </button>
+   <div className="fixed top-0 bottom-0 h-screen inset-0 flex justify-center bg-[#171717] z-50 overflow-y-auto ">
+  <div className=" text-white w-full  p-6 relative">
+    <button
+      onClick={onClose}
+      className="absolute top-2 cursor-pointer right-4 text-white hover:text-gray-400"
+      aria-label="Close modal"
+    >
+      <FiX size={24} />
+    </button>
 
-        <div className="flex flex-col gap-4">
-          {/* Product Header */}
-          <div className="flex items-center gap-4">
-            <img
-              src={product.logo}
-              alt={product.title}
-              className="w-16 h-16 rounded-md object-cover"
-            />
-            <div>
-              <h2 className="text-2xl font-bold">{product.title}</h2>
-              <p className="text-sm text-gray-400">Published on {formatDate(product.createdAt)}</p>
-            </div>
+    {/* Header */}
+    <div className="flex mt-10 flex-col md:flex-row md:items-start gap-6">
+      {/* Left Column */}
+      <div className="flex-1">
+        <div className="flex items-center gap-4 mb-4">
+          <img
+            src={product.logo}
+            alt={product.title}
+            className="w-16 h-16 rounded-xl border border-gray-700"
+          />
+          <div>
+            <h2 className="text-3xl font-bold">{product.title}</h2>
+            <p className="text-sm text-gray-400">
+              Published on {formatDate(product.createdAt)}
+            </p>
           </div>
+        </div>
 
-          {/* Product Description */}
-          <p className="text-gray-300">{product.fullDescription}</p>
+        <p className="text-gray-300 mb-4 leading-relaxed">{product.fullDescription}</p>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {product.tags.map((tag, i) => (
-              <span key={i} className="text-xs bg-gray-700 px-2 py-1 rounded-full">
-                {tag}
-              </span>
-            ))}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {product.tags.map((tag, i) => (
+            <span key={i} className="bg-gray-700 text-xs px-3 py-1 rounded-full uppercase tracking-wide">
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {product.link && (
+            <a
+              href={product.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm flex items-center gap-2"
+            >
+              <FiExternalLink /> Live Site
+            </a>
+          )}
+          {product.githubUrl && (
+            <a
+              href={product.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md text-sm flex items-center gap-2"
+            >
+              <FaGithub /> GitHub
+            </a>
+          )}
+        </div>
+
+        <div className="text-sm text-gray-400 mb-2">🔥 {product.upvotes} upvotes</div>
+      </div>
+
+      {/* Right Column */}
+      <div className="md:w-1/3 bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
+        <div className="flex items-center gap-4 mb-3">
+          <img
+            src={product.user.image}
+            alt={product.user.username}
+            className="w-12 h-12 rounded-full border border-gray-600"
+          />
+          <div>
+            <h3 className="font-semibold">{product.user.username}</h3>
+            <p className="text-sm text-gray-400">{product.user.bio}</p>
           </div>
+        </div>
 
-          {/* Links */}
-          <div className="flex gap-4 mt-4">
-            {product.link && (
-              <a
-                href={product.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-blue-400 hover:underline"
-              >
-                <FiExternalLink /> Live Site
-              </a>
-            )}
-            {product.githubUrl && (
-              <a
-                href={product.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-blue-400 hover:underline"
-              >
-                <FaGithub /> GitHub
-              </a>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="flex gap-6 mt-4 text-sm text-gray-400">
-            <span>🔥 {product.upvotes} upvotes</span>
-            {/* <span>{product.saved ? '💾 Saved' : '📦 Not Saved'}</span> */}
-          </div>
-
-          {/* Divider */}
-          <hr className="border-gray-700 my-4" />
-
-          {/* User Info */}
-          {product.user && (
-            <div className="flex items-center gap-4">
-              
-                <img
-                  src={product.user.image}
-                  alt={product.user.username}
-                  className="w-11 h-10 rounded-full object-cover"
-                />
-              
-              <div className="flex justify-between w-full ">
-                <div>
-                  <h3 className="font-semibold">{product.user.username}</h3>
-                  <p className="text-sm text-gray-400">{product.user.bio}</p>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-4">
-                  {product.user.twitter && (
-                    <a
-                      href={product.user.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Twitter"
-                    >
-                      <FaXTwitter size={15} className="text-blue-400" />
-                    </a>
-                  )}
-                  {product.user.github && (
-                    <a
-                      href={product.user.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="GitHub"
-                    >
-                      <FaGithub size={15} className="text-blue-400" />
-                    </a>
-                  )}
-                  {product.user.linkedin && (
-                    <a
-                      href={product.user.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="LinkedIn"
-                    >
-                      <FaLinkedin size={15} className="text-blue-400" />
-                    </a>
-                  )}
-                  {product.user.bluesky && (
-                    <a
-                      href={product.user.bluesky}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Bluesky"
-                    >
-                      <SiBluesky size={15} className="text-blue-400" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
+        <div className="flex gap-3 mt-2">
+          {product.user.twitter && (
+            <a href={product.user.twitter} target="_blank" rel="noopener noreferrer">
+              <FaXTwitter className="text-blue-400" />
+            </a>
+          )}
+          {product.user.github && (
+            <a href={product.user.github} target="_blank" rel="noopener noreferrer">
+              <FaGithub className="text-blue-400" />
+            </a>
+          )}
+          {product.user.linkedin && (
+            <a href={product.user.linkedin} target="_blank" rel="noopener noreferrer">
+              <FaLinkedin className="text-blue-400" />
+            </a>
+          )}
+          {product.user.bluesky && (
+            <a href={product.user.bluesky} target="_blank" rel="noopener noreferrer">
+              <SiBluesky className="text-blue-400" />
+            </a>
           )}
         </div>
       </div>
     </div>
+
+    {/* Comments */}
+    <div className="mt-10">
+      <h3 className="text-xl font-semibold mb-4">User Comments</h3>
+
+      {user ? (
+        <div className="space-y-2 mb-6">
+          <textarea
+            className="w-full bg-[#171717] border border-gray-700 p-3 rounded-md text-sm"
+            rows={3}
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <div className="flex justify-end">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded text-sm"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Posting...' : 'Comment'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-400 mb-4">Login to comment</p>
+      )}
+
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <div key={comment.id} className="flex gap-3 items-start">
+            <img
+              src={comment.user.image}
+              alt="user"
+              className="w-8 h-8 rounded-full border border-gray-600"
+            />
+            <div>
+              <p className="text-sm font-semibold">{comment.user.username}</p>
+              <p className="text-sm text-gray-300">{comment.content}</p>
+              <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 
