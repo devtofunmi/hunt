@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
   
     try {
-      const res = await fetch('https://launchhunt.up.railway.app/auth/login', {
+      const res = await fetch('https://launchhunt.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
