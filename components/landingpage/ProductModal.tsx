@@ -14,6 +14,7 @@ import { SiBluesky } from 'react-icons/si';
 
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
+import LoadingSpinner from './LoadingSpinner';
 
 type Comment = {
   id: string;
@@ -68,6 +69,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
 
   if (!product) return null;
 
@@ -102,7 +104,7 @@ useEffect(() => {
 
 const handleSubmit = async () => {
   if (!newComment.trim()) return;
-  setLoading(true);
+  setCommentLoading(true);
 
   try {
     await axios.post(
@@ -122,7 +124,7 @@ const handleSubmit = async () => {
   } catch (err) {
     console.error('Failed to post comment:', err);
   } finally {
-    setLoading(false);
+    setCommentLoading(false);
   }
 };
 
@@ -138,7 +140,7 @@ const handleSubmit = async () => {
     </button>
 
     {/* Header */}
-    <div className="flex mt-10 flex-col md:flex-row md:items-start gap-6">
+    <div className="flex flex-col md:flex-row gap-6 mt-12 max-w-5xl mx-auto">
       {/* Left Column */}
       <div className="flex-1">
         <div className="flex items-center gap-4 mb-4">
@@ -209,7 +211,7 @@ const handleSubmit = async () => {
               onClick={handleSubmit}
               disabled={loading}
             >
-              {loading ? 'Posting...' : 'Comment'}
+              {commentLoading ? 'Posting...' : 'Comment'}
             </button>
           </div>
         </div>
@@ -217,32 +219,34 @@ const handleSubmit = async () => {
         <p className="text-gray-400 mb-4">Login to comment</p>
       )}
 
-      <div className="space-y-4">
-  {comments.length === 0 ? (
-    <p className="text-gray-500 text-sm italic">No comments yet</p>
-  ) : (
-    comments.map((comment) => (
-      <div key={comment.id} className="flex gap-3 items-start">
-        <img
-          src={comment.user.image}
-          alt="user"
-          className="w-8 h-8 rounded-full border border-gray-600"
-        />
-        <div>
-          <p className="text-sm font-semibold">{comment.user.username}</p>
-          <p className="text-sm text-gray-300">{comment.content}</p>
-          <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
-        </div>
-      </div>
-    ))
-  )}
-</div>
+                 <div className="space-y-4">
+                         {loading ? (
+                           <p className="flex justify-center"><LoadingSpinner /></p>
+                         ) : comments.length === 0 ? (
+                           <p className="text-gray-500 text-sm italic">No comments yet</p>
+                         ) : (
+                           comments.map((comment) => (
+                             <div key={comment.id} className="flex gap-3 items-start">
+                               <img
+                                 src={comment.user.image}
+                                 alt={comment.user.username}
+                                 className="w-8 h-8 rounded-full border border-gray-600"
+                               />
+                               <div>
+                                 <p className="text-sm font-semibold">{comment.user.username}</p>
+                                 <p className="text-sm text-gray-300">{comment.content}</p>
+                                 <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
+                               </div>
+                             </div>
+                           ))
+                         )}
+                       </div>
 
     </div>
       </div>
 
       {/* Right Column */}
-      <div className="md:w-1/3 bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
+      <div className="md:w-1/3 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
         <div className="flex items-center gap-4 mb-3">
           <img
             src={product.user.image}
