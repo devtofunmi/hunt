@@ -211,7 +211,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
                   className="w-16 h-16 rounded-xl border border-gray-700"
                 />
                 <div>
-                  <h2 className="text-3xl font-bold">{selectedProduct.title}</h2>
+                  <h2 className="text-xl md:text-3xl font-bold">{selectedProduct.title}</h2>
                   <p className="text-sm text-gray-400">
                     Published on {formatDate(selectedProduct.createdAt)}
                   </p>
@@ -305,7 +305,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
             </div>
 
             {/* Right column */}
-            <div className="md:w-1/3 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
+            <div className="md:w-1/3 mb-20 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
               <div className="flex items-center gap-4 mb-3">
                 <img
                   src={selectedProduct.user.image}

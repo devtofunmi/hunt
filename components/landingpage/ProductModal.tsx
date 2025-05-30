@@ -140,7 +140,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
                 className="w-16 h-16 rounded-xl border border-gray-700"
               />
               <div>
-                <h2 className="text-3xl font-bold">{product.title}</h2>
+                <h2 className="text-xl md:text-3xl font-bold">{product.title}</h2>
                 <p className="text-sm text-gray-400">
                   Published on {formatDate(product.createdAt)}
                 </p>
@@ -253,7 +253,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
           </div>
 
           {/* Right */}
-          <div className="md:w-1/3 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
+          <div className="md:w-1/3 mb-20 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
             {product?.user && (
               <>
                 <div className="flex items-center gap-4 mb-3">
