@@ -8,6 +8,7 @@ import Modal from './ProductModal';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import { Product } from '@/types';
+// import Image from 'next/image'; // Uncomment if switching to next/image
 
 interface ProductCardProps {
   product: Product;
@@ -56,70 +57,74 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
     checkSavedStatus();
   }, [accessToken, isLoggedIn, product.id]);
 
-  const handleUpvote = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoggedIn) return redirectToLogin();
-    if (isUpvoting) return;
-    setIsUpvoting(true);
+   const handleUpvote = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+  if (!isLoggedIn) return redirectToLogin();
 
-    try {
-      const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/upvote`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+  if (isUpvoting) return;
+  setIsUpvoting(true);
 
+  try {
+    const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/upvote`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
       const text = await res.text();
-      if (!res.ok) {
-        if (text.includes('Already upvoted')) {
-          toast.info('You already upvoted this product');
-        } else {
-          throw new Error(text || 'Failed to upvote');
-        }
-        return;
+      if (text.includes('Already upvoted')) {
+        toast.info('You already upvoted this product');
+      } else {
+        throw new Error(text || 'Failed to upvote');
       }
-
-      setUpvotes((prev) => prev + 1);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to upvote');
-    } finally {
-      setIsUpvoting(false);
+      return;
     }
-  };
+
+    setUpvotes((prev) => prev + 1);
+  } catch (err: any) {
+    toast.error(err.message || 'Failed to upvote');
+  } finally {
+    setIsUpvoting(false);
+  }
+};
+
 
   const handleSave = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoggedIn) return redirectToLogin();
-    if (isSaving) return;
+  e.stopPropagation();
+  if (!isLoggedIn) return redirectToLogin();
 
-    const prevSaved = saved;
-    setSaved(!prevSaved); // optimistic UI
-    setIsSaving(true);
+  if (isSaving) return;
 
-    try {
-      const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/save`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+  const prevSaved = saved;
+  setSaved(!prevSaved); // optimistic UI
+  setIsSaving(true);
 
-      if (!res.ok) {
-        setSaved(prevSaved);
-        const text = await res.text();
-        throw new Error(text || 'Failed to toggle save');
-      }
+  try {
+    const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/save`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-      const data = await res.json();
-      setSaved(data.saved);
-    } catch (err: any) {
-      setSaved(prevSaved);
-      toast.error(err.message || 'Failed to save product');
-    } finally {
-      setIsSaving(false);
+    if (!res.ok) {
+      setSaved(prevSaved); // revert UI
+      const text = await res.text(); // try reading plain text
+      throw new Error(text || 'Failed to toggle save');
     }
-  };
+
+    const data = await res.json();
+    setSaved(data.saved);
+  } catch (err: any) {
+    setSaved(prevSaved); // revert UI
+    toast.error(err.message || 'Failed to save product');
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 
   return (
     <>
@@ -157,14 +162,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
             <span className="text-xs">{upvotes}</span>
           </button>
 
-          <button
-            aria-label="Save product"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="text-gray-400 cursor-pointer hover:text-[#0096FF] transition disabled:opacity-50"
-          >
-            <FiBookmark size={20} fill={saved ? '#0096FF' : 'none'} />
-          </button>
+          {/* {saved !== null && ( */}
+            <button
+              aria-label="Save product"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="text-gray-400 cursor-pointer hover:text-[#0096FF] transition disabled:opacity-50"
+            >
+              <FiBookmark size={20} fill={saved ? '#0096FF' : 'none'} />
+            </button>
+          {/* )} */}
         </div>
       </div>
 
