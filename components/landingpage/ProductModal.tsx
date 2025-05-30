@@ -80,46 +80,46 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     });
   };
 
-  const fetchComments = async () => {
-    try {
-      const res = await axios.get(`https://launchhunt.up.railway.app/comments/${product.id}`);
-      setComments(res.data as Comment[]);
-    } catch (err) {
-      console.error('Error fetching comments:', err);
-    }
-  };
+// Move fetchComments to component scope so it can be reused
+const fetchComments = async () => {
+  if (!product?.id) return;
+  try {
+    const response = await axios.get(`https://launchhunt.onrender.com/comments/${product.id}`);
+    setComments(response.data as Comment[]);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+  }
+};
 
-  const handleSubmit = async () => {
-    if (!newComment.trim()) return;
-    setLoading(true);
+useEffect(() => {
+  fetchComments();
+}, [product?.id]);
 
-    try {
-      await axios.post(
-        'https://launchhunt.up.railway.app/comments',
-        {
-          content: newComment,
-          productId: product.id,
+const handleSubmit = async () => {
+  if (!newComment.trim()) return;
+  setLoading(true);
+
+  try {
+    await axios.post(
+      'https://launchhunt.onrender.com/comments',
+      {
+        content: newComment,
+        productId: product.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setNewComment('');
-      fetchComments();
-    } catch (err) {
-      console.error('Failed to post comment:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (product?.id) {
-      fetchComments();
-    }
-  }, [product?.id]);
+      }
+    );
+    setNewComment('');
+    fetchComments();
+  } catch (err) {
+    console.error('Failed to post comment:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
    <div className="fixed top-0 bottom-0 h-screen inset-0 flex justify-center bg-[#171717] z-50 overflow-y-auto ">
@@ -185,6 +185,50 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
         </div>
 
         <div className="text-sm text-gray-400 mb-2">🔥 {product.upvotes} upvotes</div>
+         {/* Comments */}
+    <div className="mt-10">
+      {/* <h3 className="text-xl font-semibold mb-4">User Comments</h3> */}
+
+      {user ? (
+        <div className="space-y-2 mb-6">
+          <textarea
+            className="w-full bg-[#171717] border border-gray-700 p-3 rounded-md text-sm"
+            rows={3}
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <div className="flex justify-end">
+            <button
+              className="border border-gray-700 cursor-pointer hover:bg-gray-700 px-4 py-1.5 rounded-full text-sm"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Posting...' : 'Comment'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-400 mb-4">Login to comment</p>
+      )}
+
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <div key={comment.id} className="flex gap-3 items-start">
+            <img
+              src={comment.user.image}
+              alt="user"
+              className="w-8 h-8 rounded-full border border-gray-600"
+            />
+            <div>
+              <p className="text-sm font-semibold">{comment.user.username}</p>
+              <p className="text-sm text-gray-300">{comment.content}</p>
+              <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
       </div>
 
       {/* Right Column */}
@@ -223,53 +267,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
             </a>
           )}
         </div>
+        
       </div>
+      
     </div>
 
-    {/* Comments */}
-    <div className="mt-10">
-      <h3 className="text-xl font-semibold mb-4">User Comments</h3>
-
-      {user ? (
-        <div className="space-y-2 mb-6">
-          <textarea
-            className="w-full bg-[#171717] border border-gray-700 p-3 rounded-md text-sm"
-            rows={3}
-            placeholder="Write a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded text-sm"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? 'Posting...' : 'Comment'}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <p className="text-gray-400 mb-4">Login to comment</p>
-      )}
-
-      <div className="space-y-4">
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex gap-3 items-start">
-            <img
-              src={comment.user.image}
-              alt="user"
-              className="w-8 h-8 rounded-full border border-gray-600"
-            />
-            <div>
-              <p className="text-sm font-semibold">{comment.user.username}</p>
-              <p className="text-sm text-gray-300">{comment.content}</p>
-              <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+   
   </div>
 </div>
 
