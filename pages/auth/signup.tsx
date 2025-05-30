@@ -66,7 +66,7 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      const res = await axios.post('https://launchhunt.up.railway.app/auth/signup', {
+      const res = await axios.post('https://launchhunt.onrender.com/auth/signup', {
         username,
         email,
         password,
