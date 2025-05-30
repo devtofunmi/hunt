@@ -64,7 +64,7 @@ type ProductModalProps = {
 };
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
-    const { accessToken, user } = useAuth();
+  const { accessToken, user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
