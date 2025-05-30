@@ -34,12 +34,12 @@ const Profile: React.FC = () => {
   const fetchData = async () => {
     try {
       const [upvotedRes, savedRes] = await Promise.all([
-        fetch(`https://launchhunt.up.railway.app/products/upvoted`, {
+        fetch(`https://launchhunt.onrender.com/products/upvoted`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }),
-        fetch(`https://launchhunt.up.railway.app/products/saved`, {
+        fetch(`https://launchhunt.onrender.com/products/saved`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
