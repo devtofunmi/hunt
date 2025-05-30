@@ -250,23 +250,26 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
               )}
 
               <div className="space-y-4">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="flex gap-3 items-start">
-                    <img
-                      src={comment.user.image}
-                      alt="user"
-                      className="w-8 h-8 rounded-full border border-gray-600"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold">{comment.user.username}</p>
-                      <p className="text-sm text-gray-300">{comment.content}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {formatDate(comment.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+  {comments.length === 0 ? (
+    <p className="text-gray-500 text-sm italic">No comments yet</p>
+  ) : (
+    comments.map((comment) => (
+      <div key={comment.id} className="flex gap-3 items-start">
+        <img
+          src={comment.user.image}
+          alt="user"
+          className="w-8 h-8 rounded-full border border-gray-600"
+        />
+        <div>
+          <p className="text-sm font-semibold">{comment.user.username}</p>
+          <p className="text-sm text-gray-300">{comment.content}</p>
+          <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
             </div>
           </div>
         </div>
