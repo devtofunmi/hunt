@@ -83,11 +83,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
 // Move fetchComments to component scope so it can be reused
 const fetchComments = async () => {
   if (!product?.id) return;
-  try {
+  setLoading(true);
+  try {   
     const response = await axios.get(`https://launchhunt.onrender.com/comments/${product.id}`);
     setComments(response.data as Comment[]);
   } catch (error) {
     console.error('Error fetching comments:', error);
+    console.log("Fetching comments for productId:", product.id);
+  }
+  finally {
+    setLoading(false);
   }
 };
 
