@@ -15,17 +15,15 @@ type Comment = {
   replies?: Comment[];
 };
 
-type CommentWithRepliesProps = {
-  comment: Comment;
-  replies: Comment[];
+type UserCommentProps = {
+  comment: Comment; 
   onReply: (content: string, parentId: string) => void;
   onDelete: (commentId: string) => void;
   currentUserId: string | null;
 };
 
-const UserComment: React.FC<CommentWithRepliesProps> = ({
+const UserComment: React.FC<UserCommentProps> = ({
   comment,
-  replies,
   onReply,
   onDelete,
   currentUserId,
@@ -131,13 +129,13 @@ const UserComment: React.FC<CommentWithRepliesProps> = ({
             </div>
           )}
 
-          {replies.length > 0 && (
+          {/* Render replies recursively */}
+          {comment.replies && comment.replies.length > 0 && (
             <div className="mt-4 ml-4 border-l border-gray-700 pl-4">
-              {replies.map((reply) => (
+              {comment.replies.map((reply) => (
                 <UserComment
                   key={reply.id}
                   comment={reply}
-                  replies={reply.replies || []}
                   onReply={onReply}
                   onDelete={onDelete}
                   currentUserId={currentUserId}
