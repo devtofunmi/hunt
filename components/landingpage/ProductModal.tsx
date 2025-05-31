@@ -8,16 +8,19 @@ import { SiBluesky } from 'react-icons/si';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
+import UserComment from './UserComment';
 
 type Comment = {
   id: string;
   content: string;
   createdAt: string;
-  user?: {
+  parentId?: string;
+  user: {
     id: string;
-    username?: string;
-    image?: string;
+    username: string;
+    image: string;
   };
+  replies?: Comment[];
 };
 
 type SocialLink = {
@@ -121,12 +124,41 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     }
   };
 
+    const handleReply = async (content: string, parentId: string) => {
+  try {
+    await axios.post(
+      `https://launchhunt.onrender.com/comments`,
+      { content, productId: product.id, parentId },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    fetchComments(); // no need to pass ID, it uses product.id internally
+  } catch (err) {
+    console.error('Failed to reply:', err);
+  }
+};
+
+const handleDelete = async (commentId: string) => {
+  try {
+    await axios.delete(`https://launchhunt.onrender.com/comments/${commentId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    fetchComments(); // again, reuses product.id
+  } catch (err) {
+    console.error('Failed to delete comment:', err);
+  }
+};
+
+  
+    const rootComments = comments.filter((c) => !c.parentId);
+    const getReplies = (commentId: string) =>
+    comments.filter((c) => c.parentId === commentId);
+
   return (
     <div className="fixed top-0 bottom-0 h-screen inset-0 flex justify-center bg-[#171717] z-50 overflow-y-auto">
       <div className="text-white w-full p-6 relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-4 text-white hover:text-gray-400"
+          className="absolute cursor-pointer top-2 right-4 text-white hover:text-gray-400"
           aria-label="Close modal"
         >
           <FiX size={24} />
@@ -191,67 +223,55 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
               🔥 {product.upvotes} upvotes
             </div>
 
-            {/* Comments Section */}
-            <div className="mt-10">
+             {/* Comments Section */}
+            <section>
+              {/* <h3 className="mb-4 text-xl font-bold">Comment</h3> */}
+
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <div className="mb-6 max-h-[40vh] overflow-y-auto">
+                  {rootComments.length === 0 ? (
+                    <p className="text-gray-400">No comments yet. Be the first!</p>
+                  ) : (
+                    rootComments.map((comment) => (
+                      <UserComment
+                        key={comment.id}
+                        comment={comment}
+                        replies={getReplies(comment.id)}
+                        onReply={handleReply}
+                        onDelete={handleDelete}
+                        currentUserId={user?.id || null}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
+
               {user ? (
-                <div className="space-y-2 mb-6">
-                  <textarea
-                    className="w-full bg-[#171717] border border-gray-700 p-3 rounded-md text-sm"
-                    rows={3}
-                    placeholder="Write a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                  <div className="flex justify-end">
-                    <button
+               <div className="flex flex-col gap-2">
+                    <textarea
+                      rows={3}
+                      placeholder="Write a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="w-full resize-none rounded-md border border-gray-700  px-4 py-2 text-white placeholder-gray-400 focus:outline-none"
+                    />
+                    <div className="flex justify-end">
+                      <button
                       onClick={handleSubmit}
                       disabled={commentLoading}
-                      className="border border-gray-700 hover:bg-gray-700 px-4 py-1.5 rounded-full text-sm"
+                      className="border border-gray-700 cursor-pointer hover:bg-gray-700 px-4 py-2 rounded-md text-sm disabled:opacity-50"
                     >
                       {commentLoading ? 'Posting...' : 'Comment'}
                     </button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-400 mb-4">Login to comment</p>
-              )}
-
-              <div className="space-y-4">
-                {loading ? (
-                  <p className="flex justify-center">
-                    <LoadingSpinner />
-                  </p>
-                ) : comments.length === 0 ? (
-                  <p className="text-gray-500 text-sm italic">
-                    No comments yet
-                  </p>
-                ) : (
-                  comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 items-start">
-                      <img
-                        src={
-                          comment?.user?.image ||
-                          'https://via.placeholder.com/40x40?text=👤'
-                        }
-                        alt={comment?.user?.username || 'User'}
-                        className="w-8 h-8 rounded-full border border-gray-600"
-                      />
-                      <div>
-                        <p className="text-sm font-semibold">
-                          {comment?.user?.username || 'Unknown user'}
-                        </p>
-                        <p className="text-sm text-gray-300">
-                          {comment.content}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatDate(comment.createdAt)}
-                        </p>
-                      </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
+                    
+                  </div>
+              ) : (
+                <p className="text-gray-400">Please log in to post comments.</p>
+              )}
+            </section>
           </div>
 
           {/* Right */}
