@@ -75,6 +75,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     });
   };
 
+  
+
   const fetchComments = async () => {
     if (!product?.id) return;
     setLoading(true);

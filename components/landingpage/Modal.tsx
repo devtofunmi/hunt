@@ -78,6 +78,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
   }, [isOpen]);
 
   useEffect(() => {
+  if (isOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+
+  return () => {
+    document.body.style.overflow = '';
+  };
+}, [isOpen]);
+
+
+  useEffect(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) {
       setFilteredProducts([]);
