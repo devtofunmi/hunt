@@ -281,7 +281,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
                         <UserComment
                           key={comment.id}
                           comment={comment}
-                          replies={getReplies(comment.id)}
                           onReply={handleReply}
                           onDelete={handleDelete}
                           currentUserId={user?.id || null}
@@ -292,7 +291,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
                 )}
 
                  {user ? (
-               <div className="flex flex-col gap-2">
+               <div className="flex mt-5 flex-col gap-2">
                     <textarea
                       rows={3}
                       placeholder="Write a comment..."
