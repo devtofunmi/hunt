@@ -69,14 +69,25 @@ const UserComment: React.FC<CommentWithRepliesProps> = ({
               day: 'numeric',
             })}
           </p>
-          <div className="flex gap-4 mt-2 text-xs text-gray-400">
-            <button
-              onClick={() => setReplying((r) => !r)}
-              className="cursor-pointer hover:underline"
-              type="button"
-            >
-              Reply
-            </button>
+
+          <div className="flex gap-4 mt-2 text-xs text-gray-400 items-center relative">
+            {currentUserId ? (
+              <button
+                onClick={() => setReplying((r) => !r)}
+                className="cursor-pointer hover:underline"
+                type="button"
+              >
+                Reply
+              </button>
+            ) : (
+              <div className="relative group inline-block">
+                <span className="cursor-not-allowed text-gray-400">Reply</span>
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-50">
+                  Login to reply
+                </div>
+              </div>
+            )}
+
             {canDelete && (
               <button
                 onClick={() => onDelete(comment.id)}
@@ -94,7 +105,7 @@ const UserComment: React.FC<CommentWithRepliesProps> = ({
                 rows={2}
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                className="w-full rounded-md border border-gray-700  px-2 py-1 text-white focus:outline-none"
+                className="w-full rounded-md border border-gray-700 px-2 py-1 text-white focus:outline-none"
                 placeholder="Write a reply..."
               />
               <div className="flex gap-2 mt-1">

@@ -81,19 +81,21 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   
 
   const fetchComments = async () => {
-    if (!product?.id) return;
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://launchhunt.onrender.com/comments/${product.id}`
-      );
-      setComments(response.data as Comment[]);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!product?.id) return;
+  setLoading(true);
+  try {
+    const response = await axios.get(
+      `https://launchhunt.onrender.com/comments/${product.id}`
+    );
+    console.log('Fetched comments:', response.data); 
+    setComments(response.data as Comment[]);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchComments();
@@ -147,6 +149,14 @@ const handleDelete = async (commentId: string) => {
     console.error('Failed to delete comment:', err);
   }
 };
+
+useEffect(() => {
+  document.body.style.overflow = 'hidden';
+  return () => {
+    document.body.style.overflow = 'auto';
+  };
+}, []);
+
 
   
     const rootComments = comments.filter((c) => !c.parentId);
