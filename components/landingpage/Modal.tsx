@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { FiExternalLink, FiX } from 'react-icons/fi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
-import { SiBluesky } from 'react-icons/si';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
+import { SiBluesky } from 'react-icons/si';
+import { FaXTwitter } from 'react-icons/fa6';
+import UserComment from './UserComment';
 
 type ModalProps = {
   isOpen: boolean;
@@ -20,16 +21,12 @@ type Comment = {
   id: string;
   content: string;
   createdAt: string;
+  parentId?: string;
   user: {
     id: string;
     username: string;
     image: string;
   };
-};
-
-type SocialLink = {
-  platform: string;
-  url: string;
 };
 
 type User = {
@@ -41,7 +38,6 @@ type User = {
   github: string;
   linkedin: string;
   bluesky: string;
-  socialLinks: SocialLink[];
 };
 
 type Product = {
@@ -57,6 +53,11 @@ type Product = {
   link?: string;
   createdAt: string;
   user: User;
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
@@ -78,32 +79,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
   }, [isOpen]);
 
   useEffect(() => {
-  if (isOpen) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
-
-  return () => {
-    document.body.style.overflow = '';
-  };
-}, [isOpen]);
-
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (!term) {
-      setFilteredProducts([]);
-      return;
-    }
+    if (!term) return setFilteredProducts([]);
 
     const timeout = setTimeout(() => {
-      const filtered = products.filter(({ title = '', shortDescription = '' }) => {
-        return (
-          title.toLowerCase().includes(term) ||
-          shortDescription.toLowerCase().includes(term)
-        );
-      });
+      const filtered = products.filter(({ title, shortDescription }) =>
+        title.toLowerCase().includes(term) ||
+        shortDescription.toLowerCase().includes(term)
+      );
       setFilteredProducts(filtered);
     }, 300);
 
@@ -114,22 +104,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
     if (selectedProduct?.id) fetchComments(selectedProduct.id);
   }, [selectedProduct?.id]);
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const fetchComments = async (productId: string) => {
     setLoading(true);
     try {
       const res = await axios.get(`https://launchhunt.onrender.com/comments/${productId}`);
       setComments(res.data as Comment[]);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
+    } catch (err) {
+      console.error('Error fetching comments:', err);
     } finally {
       setLoading(false);
     }
@@ -142,24 +123,45 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
     try {
       await axios.post(
         `https://launchhunt.onrender.com/comments`,
-        {
-          content: newComment,
-          productId: selectedProduct.id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        { content: newComment, productId: selectedProduct.id },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setNewComment('');
       fetchComments(selectedProduct.id);
-    } catch (error) {
-      console.error('Failed to post comment:', error);
+    } catch (err) {
+      console.error('Failed to post comment:', err);
     } finally {
       setCommentLoading(false);
     }
   };
+
+  const handleReply = async (content: string, parentId: string) => {
+    try {
+      await axios.post(
+        `https://launchhunt.onrender.com/comments`,
+        { content, productId: selectedProduct?.id, parentId },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if (selectedProduct?.id) fetchComments(selectedProduct.id);
+    } catch (err) {
+      console.error('Failed to reply:', err);
+    }
+  };
+
+  const handleDelete = async (commentId: string) => {
+    try {
+      await axios.delete(`https://launchhunt.onrender.com/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (selectedProduct?.id) fetchComments(selectedProduct.id);
+    } catch (err) {
+      console.error('Failed to delete comment:', err);
+    }
+  };
+
+  const rootComments = comments.filter((c) => !c.parentId);
+  const getReplies = (commentId: string) =>
+    comments.filter((c) => c.parentId === commentId);
 
   if (!isOpen) return null;
 
@@ -266,94 +268,118 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, products }) => {
 
               <div className="text-sm text-gray-400 mb-6">🔥 {selectedProduct.upvotes} upvotes</div>
 
-              {/* Comments */}
-              <div className="mt-8">
-                {user ? (
-                  <div className="space-y-2 mb-6">
+              {/* Comments Section */}
+              <section>
+                {loading ? (
+                  <LoadingSpinner />
+                ) : (
+                  <div className="mb-6 max-h-[40vh] overflow-y-auto">
+                    {rootComments.length === 0 ? (
+                      <p className="text-gray-400">No comments yet. Be the first!</p>
+                    ) : (
+                      rootComments.map((comment) => (
+                        <UserComment
+                          key={comment.id}
+                          comment={comment}
+                          replies={getReplies(comment.id)}
+                          onReply={handleReply}
+                          onDelete={handleDelete}
+                          currentUserId={user?.id || null}
+                        />
+                      ))
+                    )}
+                  </div>
+                )}
+
+                 {user ? (
+               <div className="flex flex-col gap-2">
                     <textarea
-                      className="w-full bg-[#171717] border border-gray-700 p-3 rounded-md text-sm"
                       rows={3}
                       placeholder="Write a comment..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
+                      className="w-full resize-none rounded-md border border-gray-700  px-4 py-2 text-white placeholder-gray-400 focus:outline-none"
                     />
                     <div className="flex justify-end">
                       <button
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="border border-gray-700 hover:bg-gray-700 px-4 py-1.5 rounded-full text-sm"
-                      >
-                        {commentLoading ? 'Posting...' : 'Comment'}
-                      </button>
+                      onClick={handleSubmit}
+                      disabled={commentLoading}
+                      className="border border-gray-700 cursor-pointer hover:bg-gray-700 px-4 py-2 rounded-md text-sm disabled:opacity-50"
+                    >
+                      {commentLoading ? 'Posting...' : 'Comment'}
+                    </button>
                     </div>
+                    
                   </div>
-                ) : (
-                  <p className="text-gray-400 mb-4">Login to comment</p>
-                )}
-
-                <div className="space-y-4">
-                  {loading ? (
-                    <p className="flex justify-center"><LoadingSpinner /></p>
-                  ) : comments.length === 0 ? (
-                    <p className="text-gray-500 text-sm italic">No comments yet</p>
-                  ) : (
-                    comments.map((comment) => (
-                      <div key={comment.id} className="flex gap-3 items-start">
-                        <img
-                          src={comment.user.image}
-                          alt={comment.user.username}
-                          className="w-8 h-8 rounded-full border border-gray-600"
-                        />
-                        <div>
-                          <p className="text-sm font-semibold">{comment.user.username}</p>
-                          <p className="text-sm text-gray-300">{comment.content}</p>
-                          <p className="text-xs text-gray-500 mt-1">{formatDate(comment.createdAt)}</p>
-                        </div>
+              ) : (
+                <p className="text-gray-400">Please log in to post comments.</p>
+              )}
+              </section>
+            </div>
+             {/* Right */}
+                      <div className="md:w-1/3 mb-20 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
+                        {selectedProduct?.user && (
+                          <>
+                            <div className="flex items-center gap-4 mb-3">
+                              <img
+                                src={
+                                  selectedProduct.user.image ||
+                                  'https://via.placeholder.com/48x48?text=👤'
+                                }
+                                alt={selectedProduct.title}
+                                className="w-12 h-12 rounded-full border border-gray-600"
+                              />
+                              <div>
+                                <h3 className="font-semibold">
+                                  {selectedProduct.user.username || 'Unknown'}
+                                </h3>
+                                <p className="text-sm text-gray-400">
+                                  {selectedProduct.user.bio || ''}
+                                </p>
+                              </div>
+                            </div>
+            
+                            <div className="flex gap-3 mt-2">
+                              {selectedProduct.user.twitter && (
+                                <a
+                                  href={selectedProduct.user.twitter}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <FaXTwitter className="text-blue-400" />
+                                </a>
+                              )}
+                              {selectedProduct.user.github && (
+                                <a
+                                  href={selectedProduct.user.github}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <FaGithub className="text-blue-400" />
+                                </a>
+                              )}
+                              {selectedProduct.user.linkedin && (
+                                <a
+                                  href={selectedProduct.user.linkedin}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <FaLinkedin className="text-blue-400" />
+                                </a>
+                              )}
+                              {selectedProduct.user.bluesky && (
+                                <a
+                                  href={selectedProduct.user.bluesky}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <SiBluesky className="text-blue-400" />
+                                </a>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
-                    ))
-                  )}
-                </div>
-
-              </div>
-            </div>
-
-            {/* Right column */}
-            <div className="md:w-1/3 mb-20 h-fit bg-[#2a2a2e] rounded-xl p-4 shadow-md border border-gray-700">
-              <div className="flex items-center gap-4 mb-3">
-                <img
-                  src={selectedProduct.user.image}
-                  alt={selectedProduct.user.username}
-                  className="w-12 h-12 rounded-full border border-gray-600"
-                />
-                <div>
-                  <h3 className="text-lg font-semibold">{selectedProduct.user.username}</h3>
-                  <p className="text-sm text-gray-400">{selectedProduct.user.bio}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-4 text-gray-400">
-                {selectedProduct.user.twitter && (
-                  <a href={selectedProduct.user.twitter} target="_blank" rel="noopener noreferrer">
-                    <FaXTwitter />
-                  </a>
-                )}
-                {selectedProduct.user.github && (
-                  <a href={selectedProduct.user.github} target="_blank" rel="noopener noreferrer">
-                    <FaGithub />
-                  </a>
-                )}
-                {selectedProduct.user.linkedin && (
-                  <a href={selectedProduct.user.linkedin} target="_blank" rel="noopener noreferrer">
-                    <FaLinkedin />
-                  </a>
-                )}
-                {selectedProduct.user.bluesky && (
-                  <a href={selectedProduct.user.bluesky} target="_blank" rel="noopener noreferrer">
-                    <SiBluesky />
-                  </a>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       )}
