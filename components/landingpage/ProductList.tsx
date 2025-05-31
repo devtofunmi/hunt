@@ -35,7 +35,7 @@ const ProductList: React.FC<ProductListProps> = ({
         <div className="text-center mt-4">
           <button
             onClick={onSeeMore}
-            className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] px-6 py-2 rounded-full text-white"
+            className="bg-gradient-to-r from-[#6E00FF] to-[#0096FF] px-6 py-2 cursor-pointer rounded-full text-white"
           >
             See More
           </button>
