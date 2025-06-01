@@ -69,7 +69,7 @@ const LandingPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('https://launchhunt.up.railway.app/products');
+        const res = await fetch('https://launchhunt.onrender.com/products');
         const data = await res.json();
         const mappedProducts = data.map((product: any) => ({
           ...product,
