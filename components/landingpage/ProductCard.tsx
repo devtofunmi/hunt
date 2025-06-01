@@ -39,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
       if (!isLoggedIn) return;
 
       try {
-        const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/saved`, {
+        const res = await fetch(`https://launchhunt.onrender.com/products/${product.id}/saved`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -65,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
   setIsUpvoting(true);
 
   try {
-    const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/upvote`, {
+    const res = await fetch(`https://launchhunt.onrender.com/products/${product.id}/upvote`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -102,7 +102,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onUpvote, onSave }) 
   setIsSaving(true);
 
   try {
-    const res = await fetch(`https://launchhunt.up.railway.app/products/${product.id}/save`, {
+    const res = await fetch(`https://launchhunt.onrender.com/products/${product.id}/save`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
