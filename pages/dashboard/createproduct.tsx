@@ -124,7 +124,7 @@ const CreateProduct = () => {
     try {
       setLoading(true);
 
-      const res = await fetch('https://launchhunt.up.railway.app/products', {
+      const res = await fetch('https://launchhunt.onrender.com/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
