@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch('https://launchhunt.up.railway.app/profile', {
+        const res = await fetch('https://launchhunt.onrender.com/profile', {
           credentials: 'include',
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshAccessToken = async () => {
     try {
-      const res = await fetch('https://launchhunt.up.railway.app/auth/refresh', {
+      const res = await fetch('https://launchhunt.onrender.com/auth/refresh', {
         method: 'POST',
         credentials: 'include',
       });
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      await fetch('https://launchhunt.up.railway.app/auth/logout', {
+      await fetch('https://launchhunt.onrender.com/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
