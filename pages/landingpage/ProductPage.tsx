@@ -74,7 +74,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`https://launchhunt.up.railway.app/comments/${product.id}`);
+      const res = await axios.get(`https://launchhunt.onrender.com/comments/${product.id}`);
       setComments(res.data as Comment[]);
     } catch (err) {
       console.error('Error fetching comments:', err);
@@ -87,7 +87,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
 
     try {
       await axios.post(
-        'https://launchhunt.up.railway.app/comments',
+        'https://launchhunt.onrender.com/comments',
         {
           content: newComment,
           productId: product.id,
