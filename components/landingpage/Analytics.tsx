@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
   useEffect(() => {
   const trackHomepageView = async () => {
     try {
-      const res = await fetch('https://launchhunt.up.railway.app/analytics/view/homepage', {
+      const res = await fetch('https://launchhunt.onrender.com/analytics/view/homepage', {
         method: 'POST',
       });
       if (!res.ok) throw new Error('Failed to track homepage view');
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenModal }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('https://launchhunt.up.railway.app/analytics');
+      const res = await fetch('https://launchhunt.onrender.com/analytics');
       if (!res.ok) throw new Error('Failed to fetch analytics');
       const data = await res.json();
       setStats(data);
