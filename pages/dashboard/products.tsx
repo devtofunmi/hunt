@@ -38,7 +38,7 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>('https://launchhunt.up.railway.app/products/me', {
+        const res = await axios.get<Product[]>('https://launchhunt.onrender.com/products/me', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
