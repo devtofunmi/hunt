@@ -102,7 +102,7 @@ const Page = () => {
   }
 
   try {
-    const res = await fetch("https://launchhunt.up.railway.app/profile", {
+    const res = await fetch("https://launchhunt.onrender.com/profile", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
